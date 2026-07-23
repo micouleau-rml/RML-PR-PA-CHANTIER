@@ -1,4 +1,13 @@
-# V11
-Ajout de la rubrique Sous-faces : Aluminium ou PVC, couleur Gutterfrance, quantité/ML et observations.
+# RML Préparation Chantier V11 REV3
 
-Pour mettre à jour GitHub : Add file > Upload files, déposez tout le contenu de ce ZIP, remplacez les fichiers existants puis Commit changes.
+Correction de la rubrique SOUS-FACES :
+- Aluminium
+- PVC
+- Couleur Gutterfrance
+- Quantité
+- Observations
+- Ajouter / Supprimer
+
+Pour la mise à jour GitHub, remplacez au minimum :
+- index.html
+- service-worker.js
