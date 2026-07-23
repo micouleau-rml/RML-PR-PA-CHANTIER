@@ -104,7 +104,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11</p>
+      <p>Préparation chantier — V11 REV2</p>
     </div>
   </div></div>
 </header>
@@ -257,19 +257,20 @@ const SCHEMAS = {
     ]
   },
   bandeaux: {
-    headers:["Produit","Couleur","Quantité / ML"],
+    headers:["Accessoire","Couleur","Quantité","Observations"],
     fields:[
       {key:"type",type:"select",options:CATALOG.bandeaux},
       {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"text"}
+      {key:"qty",type:"number"},
+      {key:"note",type:"text"}
     ]
   },
   sous_faces: {
-    headers:["Type","Couleur","Quantité / ML","Observations"],
+    headers:["Accessoire","Couleur","Quantité","Observations"],
     fields:[
       {key:"type",type:"select",options:CATALOG.sous_faces},
       {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"text"},
+      {key:"qty",type:"number"},
       {key:"note",type:"text"}
     ]
   }
