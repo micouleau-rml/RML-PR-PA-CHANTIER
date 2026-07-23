@@ -1,0 +1,567 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RML Préparation Chantier</title>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="theme-color" content="#113a5d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Prépa Chantier">
+<meta name="mobile-web-app-capable" content="yes">
+
+<style>
+:root {
+  --navy:#113a5d; --navy2:#0a2840; --bg:#eef2f5; --card:#fff;
+  --line:#d9e0e6; --text:#1d2730; --muted:#66727e; --danger:#b42318;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);padding-bottom:env(safe-area-inset-bottom)}
+header{position:sticky;top:0;padding-top:calc(16px + env(safe-area-inset-top));z-index:20;background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+header h1{margin:0;text-align:center;font-size:24px}
+header p{margin:4px 0 0;text-align:center;font-size:13px;opacity:.9}
+.header-inner{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+max-width:1180px;
+margin:0 auto;
+}
+.rml-logo{
+display:block;
+width:220px;
+max-width:90%;
+margin-bottom:8px;
+}
+.header-title{text-align:center;}
+main{max-width:1180px;margin:18px auto;padding:0 12px 40px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.card{background:var(--card);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+h2{margin:0 0 14px;color:var(--navy);font-size:20px;border-bottom:2px solid var(--navy);padding-bottom:7px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #bdc7d1;border-radius:7px;background:#fff;font-size:15px}
+textarea{resize:vertical}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{border:1px solid var(--line);padding:8px;vertical-align:middle}
+th{background:#edf3f8;color:var(--navy2);font-size:13px;text-align:left}
+td input,td select{padding:8px;font-size:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.primary{background:var(--navy);color:#fff}
+.secondary{background:#e5edf3;color:var(--navy2)}
+.danger{background:var(--danger);color:#fff}
+.small{padding:7px 9px;font-size:12px}
+.status{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0}
+.hidden{display:none}
+@media(max-width:720px){
+  .grid{grid-template-columns:1fr}
+  header h1{font-size:19px}
+  .card{padding:14px}
+  .header-inner{display:flex;flex-direction:column}
+  .rml-logo{width:160px;max-height:none}
+  header{padding:12px 8px}
+}
+@media print{
+  @page{size:A4 portrait;margin:12mm}
+  body{background:#fff}
+  body > header, body > main{display:none!important}
+  .print-summary{display:block!important}
+  .print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
+  .print-doc-header img{width:120px;max-height:65px;object-fit:contain}
+  .print-doc-header h1{font-size:18px;margin:4px 0}
+  .print-doc-header h2{font-size:15px;margin:3px 0;border:0;padding:0;color:#000}
+  .print-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-bottom:12px;font-size:11px}
+  .print-info div{border-bottom:1px solid #bbb;padding:3px 0}
+  .print-section{margin:0 0 12px;break-inside:avoid}
+  .print-section h3{margin:0 0 5px;font-size:13px;background:#e9eef2;padding:5px;border:1px solid #888}
+  .print-section table{width:100%;min-width:0;border-collapse:collapse;font-size:10px}
+  .print-section th,.print-section td{border:1px solid #888;padding:4px;text-align:left}
+  .print-section th{background:#f3f3f3}
+  .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
+}
+.print-summary{display:none}
+
+.install-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:18px}
+.install-modal.hidden{display:none}
+.install-card{width:min(520px,100%);background:#fff;border-radius:14px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.install-card h2{text-align:center;margin-bottom:14px}
+.install-card p{line-height:1.5;white-space:pre-line}
+@media print{.install-modal{display:none!important}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
+    <div class="header-title">
+      <h1>RML GOUTTIÈRE ALU</h1>
+      <p>Préparation chantier — V10</p>
+    </div>
+  </div></div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button class="primary" onclick="saveJson()">💾 Sauvegarder JSON</button>
+    <button class="secondary" onclick="document.getElementById('jsonFile').click()">📂 Ouvrir JSON</button>
+    <button class="secondary" onclick="printProject()">📄 Imprimer / PDF A4</button>
+    <button class="danger" onclick="newProject()">Nouveau chantier</button>
+    <button class="secondary" id="installHelpBtn" onclick="showInstallHelp()">📲 Installer l’application</button>
+    <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
+  </div>
+  <div id="status" class="status"></div>
+
+  <section class="card">
+    <h2 style="text-align:center;letter-spacing:1px;">FICHE DE PRÉPARATION CHANTIER</h2>
+    <div class="grid">
+      <div><label>Nom du client</label><input id="client"></div>
+      <div><label>Nom du chantier</label><input id="chantier"></div>
+      <div><label>Adresse du chantier</label><input id="adresse"></div>
+      <div><label>Date prévue</label><input id="date" type="date"></div>
+      <div><label>Chef d'équipe</label><input id="chef"></div>
+      <div><label>Téléphone client</label><input id="telephone" type="tel"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Gouttières</h2>
+    <div id="gouttieres"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('gouttieres')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Accessoires gouttières</h2>
+    <div id="accessoires_gouttieres"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('accessoires_gouttieres')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Descentes</h2>
+    <div id="descentes"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('descentes')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Accessoires descentes</h2>
+    <div id="accessoires_descentes"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('accessoires_descentes')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Couvertines</h2>
+    <div id="couvertines"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('couvertines')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Accessoires couvertines</h2>
+    <div id="accessoires_couvertines"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('accessoires_couvertines')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Bandeaux</h2>
+    <div id="bandeaux"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('bandeaux')">+ Ajouter</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Remarques générales</h2>
+    <textarea id="remarques" rows="6"></textarea>
+  </section>
+</main>
+
+<div id="installModal" class="install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+  <div class="install-card">
+    <h2 id="installTitle">INSTALLER L’APPLICATION</h2>
+    <p id="installInstructions"></p>
+    <button class="primary" onclick="hideInstallHelp()">Fermer</button>
+  </div>
+</div>
+
+<div id="printSummary" class="print-summary"></div>
+
+<script>
+const COLORS = ['BLANC', 'IVOIRE', 'MIEL', 'MARRON', 'ARDOISE', 'ROUGE TUILE', 'BEIGE ROSÉ', 'ROUGE BORDEAUX', 'VERT MOUSSE', 'ROUGE CARMIN', 'JAUNE COLZA', 'BLEU AZUR', 'NOIR', 'GRIS MÉTAL', 'VERT OLIVE', 'OCRE', 'VERT RÉSÉDA', 'BLEU GENTIANE', 'VERT SAPIN', 'CUIVRE FRANÇAIS', 'BRONZE', 'BLEU PIGEON', 'IMITATION ZINC', 'SABLE', 'BEIGE CENDRÉ', 'TITANE', 'NOIR SABLÉ', 'CRÈME', 'GRIS CLAIR', 'BLEU 5008', 'ZINC PATINA', 'GRIS 2900', 'GRIS GALET 7035', 'GRIS 9007'];
+const CATALOG = {'gouttieres': ['GF300', 'GF380', 'GFDR300', 'GFT330', 'GFC300', 'GFC380'], 'accessoires_gouttieres': ['FOND GAUCHE', 'FOND DROIT', 'FOND STANDARD', 'ANGLE INTÉRIEUR', 'ANGLE EXTÉRIEUR', 'NAISSANCE Ø70', 'NAISSANCE Ø80', 'NAISSANCE Ø90', 'NAISSANCE Ø100', 'MANCHON DE NAISSANCE Ø80', 'MANCHON DE NAISSANCE Ø100'], 'descentes_formes': ['RONDE', 'RECTANGLE'], 'descentes_rondes': ['Ø80', 'Ø100', 'Ø120', 'Ø140', 'Ø160', 'Ø180', 'Ø200'], 'descentes_rectangles': ['60×80', '70×110'], 'accessoires_descentes': ['COUDE RECTANGLE 60×80', 'COUDE RECTANGLE 70×110', 'COUDE ROND Ø80', 'COUDE ROND Ø100', 'COUDE ROND Ø120', 'DAUPHIN ALU Ø80', 'DAUPHIN ALU Ø100', 'DAUPHIN FONTE Ø80', 'DAUPHIN FONTE Ø100', 'BOÎTE À EAU STANDARD 20×20×20', 'BOÎTE À EAU SUR MESURE'], 'couvertines': ['340', '360', '380', '400', '420', '440', '460', '480', '500', '520', '540', '560', '580', '600'], 'crochets': ['AVEC PENTE', 'SANS PENTE'], 'accessoires_couvertines': ['ANGLE', 'FOND STANDARD'], 'bandeaux': ['LAMBREQUIN ALUMINIUM TYPE ORNON','BANDEAU ALU 10/10','BANDEAU ALU 15/10']};
+
+const SCHEMAS = {
+  gouttieres: {
+    headers:["Type","Couleur","Quantité / ML","Observations"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.gouttieres},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"text"},
+      {key:"note",type:"text"}
+    ]
+  },
+  accessoires_gouttieres: {
+    headers:["Accessoire","Couleur","Quantité","Observations"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.accessoires_gouttieres},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"number"},
+      {key:"note",type:"text"}
+    ]
+  },
+  descentes: {
+    headers:["Forme","Dimension","Couleur","Quantité / ML","Observations"],
+    fields:[
+      {key:"shape",type:"select",options:CATALOG.descentes_formes,onchange:"updateDescentDimension(this)"},
+      {key:"dimension",type:"select",options:[]},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"text"},
+      {key:"note",type:"text"}
+    ]
+  },
+  accessoires_descentes: {
+    headers:["Accessoire","Couleur","Quantité","Observations"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.accessoires_descentes},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"number"},
+      {key:"note",type:"text"}
+    ]
+  },
+  couvertines: {
+    headers:["Largeur","Type de crochets","Couleur","Quantité / ML","Observations"],
+    fields:[
+      {key:"width",type:"select",options:CATALOG.couvertines},
+      {key:"hook",type:"select",options:CATALOG.crochets},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"text"},
+      {key:"note",type:"text"}
+    ]
+  },
+  accessoires_couvertines: {
+    headers:["Accessoire","Couleur","Quantité","Observations"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.accessoires_couvertines},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"number"},
+      {key:"note",type:"text"}
+    ]
+  },
+  bandeaux: {
+    headers:["Produit","Couleur","Quantité / ML"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.bandeaux},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"text"}
+    ]
+  }
+};
+
+function optionHtml(options, selected="") {
+  return '<option value="">Choisir</option>' + options.map(v =>
+    `<option value="${v}" ${v===selected?'selected':''}>${v}</option>`
+  ).join('');
+}
+
+function inputHtml(field, value="") {
+  if(field.type==="select") {
+    return `<select data-key="${field.key}" ${field.onchange?`onchange="${field.onchange}"`:''}>${optionHtml(field.options,value)}</select>`;
+  }
+  const type = field.type==="number" ? 'number' : 'text';
+  return `<input data-key="${field.key}" type="${type}" value="${String(value??'').replaceAll('"','&quot;')}">`;
+}
+
+function renderSection(section) {
+  const schema=SCHEMAS[section];
+  const host=document.getElementById(section);
+  host.innerHTML=`<div class="table-wrap"><table><thead><tr>${schema.headers.map(h=>`<th>${h}</th>`).join('')}<th class="delete-col"></th></tr></thead><tbody></tbody></table></div>`;
+}
+
+function addRow(section, data={}) {
+  const schema=SCHEMAS[section];
+  const tbody=document.querySelector(`#${section} tbody`);
+  const tr=document.createElement('tr');
+  tr.innerHTML=schema.fields.map(f=>`<td>${inputHtml(f,data[f.key])}</td>`).join('')+
+    `<td class="delete-col"><button class="danger small" onclick="this.closest('tr').remove();autoSave()">Supprimer</button></td>`;
+  tbody.appendChild(tr);
+  if(section==="descentes") {
+    const shape=tr.querySelector('[data-key="shape"]');
+    updateDescentDimension(shape, data.dimension||"");
+  }
+  tr.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',autoSave));
+}
+
+function updateDescentDimension(select, selected="") {
+  const tr=select.closest('tr');
+  const dim=tr.querySelector('[data-key="dimension"]');
+  const options=select.value==="RONDE" ? CATALOG.descentes_rondes :
+                select.value==="RECTANGLE" ? CATALOG.descentes_rectangles : [];
+  dim.innerHTML=optionHtml(options,selected);
+}
+
+function collectSection(section) {
+  return [...document.querySelectorAll(`#${section} tbody tr`)].map(tr => {
+    const obj={};
+    tr.querySelectorAll('[data-key]').forEach(el=>obj[el.dataset.key]=el.value);
+    return obj;
+  });
+}
+
+function getProject() {
+  const sections={};
+  Object.keys(SCHEMAS).forEach(k=>sections[k]=collectSection(k));
+  return {
+    version:"V10",
+    savedAt:new Date().toISOString(),
+    info:{
+      client:client.value, chantier:chantier.value, adresse:adresse.value,
+      date:date.value, chef:chef.value, telephone:telephone.value,
+      remarques:remarques.value
+    },
+    sections
+  };
+}
+
+function loadProject(data) {
+  const info=data.info||{};
+  client.value=info.client||""; chantier.value=info.chantier||""; adresse.value=info.adresse||"";
+  date.value=info.date||""; chef.value=info.chef||""; telephone.value=info.telephone||"";
+  remarques.value=info.remarques||"";
+  Object.keys(SCHEMAS).forEach(section=>{
+    renderSection(section);
+    const rows=(data.sections&&data.sections[section])||[];
+    (rows.length?rows:[{}]).forEach(r=>addRow(section,r));
+  });
+  autoSave();
+  setStatus("Chantier chargé.");
+}
+
+function safeName(value) {
+  return (value||"Sans nom").trim().replace(/[\\/:*?"<>|]+/g,"-");
+}
+
+function saveJson() {
+  const data=getProject();
+  const fileName=`${safeName(data.info.client)} - ${safeName(data.info.chantier)}.json`;
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=fileName; a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus("Fichier JSON enregistré.");
+}
+
+document.getElementById('jsonFile').addEventListener('change', async e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  try {
+    const data=JSON.parse(await file.text());
+    loadProject(data);
+  } catch(err) {
+    alert("Le fichier JSON est invalide.");
+  }
+  e.target.value="";
+});
+
+function autoSave() {
+  localStorage.setItem("rmlPreparationChantierV10",JSON.stringify(getProject()));
+}
+
+function setStatus(msg) {
+  status.textContent=msg;
+  setTimeout(()=>{if(status.textContent===msg)status.textContent=""},3000);
+}
+
+function newProject() {
+  if(!confirm("Créer une nouvelle fiche et effacer toutes les données du chantier actuel ?")) return;
+
+  localStorage.removeItem("rmlPreparationChantierV10");
+
+  client.value = "";
+  chantier.value = "";
+  adresse.value = "";
+  date.value = "";
+  chef.value = "";
+  telephone.value = "";
+  remarques.value = "";
+
+  Object.keys(SCHEMAS).forEach(section => {
+    renderSection(section);
+    addRow(section);
+  });
+
+  document.getElementById("jsonFile").value = "";
+  document.getElementById("printSummary").innerHTML = "";
+
+  setStatus("Nouveau chantier créé.");
+}
+
+
+const PRINT_LABELS = {
+  gouttieres: "GOUTTIÈRES",
+  accessoires_gouttieres: "ACCESSOIRES GOUTTIÈRES",
+  descentes: "DESCENTES",
+  accessoires_descentes: "ACCESSOIRES DESCENTES",
+  couvertines: "COUVERTINES",
+  accessoires_couvertines: "ACCESSOIRES COUVERTINES",
+  bandeaux: "BANDEAUX"
+};
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function isFilledQuantity(value) {
+  const v = String(value ?? "").trim().replace(",", ".");
+  if (!v) return false;
+  const n = Number(v);
+  return Number.isNaN(n) ? true : n !== 0;
+}
+
+function printableRows(section, rows) {
+  return rows.filter(row => isFilledQuantity(row.qty));
+}
+
+function printProject() {
+  const data = getProject();
+  const logo = document.querySelector(".rml-logo")?.src || "";
+  const info = data.info || {};
+
+  const infoItems = [
+    ["Client", info.client],
+    ["Chantier", info.chantier],
+    ["Adresse", info.adresse],
+    ["Date prévue", info.date],
+    ["Chef d'équipe", info.chef],
+    ["Téléphone", info.telephone]
+  ].filter(([,value]) => String(value || "").trim() !== "");
+
+  let content = `
+    <div class="print-doc-header">
+      ${logo ? `<img src="${logo}" alt="Logo RML">` : ""}
+      <h1>RML GOUTTIÈRE ALU</h1>
+      <h2>FICHE DE PRÉPARATION CHANTIER</h2>
+    </div>
+    <div class="print-info">
+      ${infoItems.map(([label,value]) => `<div><strong>${escapeHtml(label)} :</strong> ${escapeHtml(value)}</div>`).join("")}
+    </div>`;
+
+  Object.keys(SCHEMAS).forEach(section => {
+    const rows = printableRows(section, data.sections[section] || []);
+    if (!rows.length) return;
+
+    const schema = SCHEMAS[section];
+    content += `
+      <section class="print-section">
+        <h3>${PRINT_LABELS[section]}</h3>
+        <table>
+          <thead>
+            <tr>${schema.headers.map(h => `<th>${escapeHtml(h)}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>
+                ${schema.fields.map(field => `<td>${escapeHtml(row[field.key] || "")}</td>`).join("")}
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </section>`;
+  });
+
+  if (String(info.remarques || "").trim()) {
+    content += `
+      <section class="print-section">
+        <h3>REMARQUES GÉNÉRALES</h3>
+        <div class="print-notes">${escapeHtml(info.remarques)}</div>
+      </section>`;
+  }
+
+  document.getElementById("printSummary").innerHTML = content;
+  window.print();
+}
+
+
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  setStatus("Application installée.");
+});
+
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function isStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+async function showInstallHelp() {
+  if (isStandalone()) {
+    alert("L’application est déjà installée.");
+    return;
+  }
+
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    return;
+  }
+
+  const p = document.getElementById("installInstructions");
+  if (isIos()) {
+    p.textContent =
+      "Sur iPhone ou iPad :\n\n" +
+      "1. Ouvrez cette page dans Safari.\n" +
+      "2. Touchez le bouton Partager (carré avec une flèche vers le haut).\n" +
+      "3. Choisissez « Sur l’écran d’accueil ».\n" +
+      "4. Touchez « Ajouter ».";
+  } else {
+    p.textContent =
+      "Sur Mac :\n\n" +
+      "• Dans Safari, utilisez Fichier > Ajouter au Dock.\n" +
+      "• Dans Chrome ou Edge, utilisez l’icône d’installation située dans la barre d’adresse.";
+  }
+  document.getElementById("installModal").classList.remove("hidden");
+}
+
+function hideInstallHelp() {
+  document.getElementById("installModal").classList.add("hidden");
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(err => {
+      console.warn("Service worker non enregistré :", err);
+    });
+  });
+}
+
+function init() {
+  Object.keys(SCHEMAS).forEach(renderSection);
+  const raw=localStorage.getItem("rmlPreparationChantierV10");
+  if(raw) {
+    try { loadProject(JSON.parse(raw)); return; } catch(e) {}
+  }
+  Object.keys(SCHEMAS).forEach(k=>addRow(k));
+  document.querySelectorAll('#client,#chantier,#adresse,#date,#chef,#telephone,#remarques')
+    .forEach(el=>el.addEventListener('change',autoSave));
+}
+init();
+</script>
+</body>
+</html>
