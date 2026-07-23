@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RML Préparation Chantier</title>
+<title>RML Préparation Chantier V11</title>
 
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/icon-192.png" sizes="192x192">
@@ -104,7 +104,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V10</p>
+      <p>Préparation chantier — V11</p>
     </div>
   </div></div>
 </header>
@@ -127,7 +127,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
       <div><label>Nom du chantier</label><input id="chantier"></div>
       <div><label>Adresse du chantier</label><input id="adresse"></div>
       <div><label>Date prévue</label><input id="date" type="date"></div>
-      <div><label>Contact chantier</label><input id="chef"></div>
+      <div><label>Chef d'équipe</label><input id="chef"></div>
       <div><label>Téléphone client</label><input id="telephone" type="tel"></div>
     </div>
   </section>
@@ -172,6 +172,11 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <h2>Bandeaux</h2>
     <div id="bandeaux"></div>
     <div class="actions"><button class="secondary" onclick="addRow('bandeaux')">+ Ajouter</button></div>
+  </section>
+  <section class="card">
+    <h2>Sous-faces</h2>
+    <div id="sous_faces"></div>
+    <div class="actions"><button class="secondary" onclick="addRow('sous_faces')">+ Ajouter</button></div>
   </section>
 
   <section class="card">
@@ -258,6 +263,15 @@ const SCHEMAS = {
       {key:"color",type:"select",options:COLORS},
       {key:"qty",type:"text"}
     ]
+  },
+  sous_faces: {
+    headers:["Type","Couleur","Quantité / ML","Observations"],
+    fields:[
+      {key:"type",type:"select",options:CATALOG.sous_faces},
+      {key:"color",type:"select",options:COLORS},
+      {key:"qty",type:"text"},
+      {key:"note",type:"text"}
+    ]
   }
 };
 
@@ -315,7 +329,7 @@ function getProject() {
   const sections={};
   Object.keys(SCHEMAS).forEach(k=>sections[k]=collectSection(k));
   return {
-    version:"V10",
+    version:"V11",
     savedAt:new Date().toISOString(),
     info:{
       client:client.value, chantier:chantier.value, adresse:adresse.value,
@@ -367,7 +381,7 @@ document.getElementById('jsonFile').addEventListener('change', async e=>{
 });
 
 function autoSave() {
-  localStorage.setItem("rmlPreparationChantierV10",JSON.stringify(getProject()));
+  localStorage.setItem("rmlPreparationChantierV11",JSON.stringify(getProject()));
 }
 
 function setStatus(msg) {
@@ -378,7 +392,7 @@ function setStatus(msg) {
 function newProject() {
   if(!confirm("Créer une nouvelle fiche et effacer toutes les données du chantier actuel ?")) return;
 
-  localStorage.removeItem("rmlPreparationChantierV10");
+  localStorage.removeItem("rmlPreparationChantierV11");
 
   client.value = "";
   chantier.value = "";
@@ -407,7 +421,8 @@ const PRINT_LABELS = {
   accessoires_descentes: "ACCESSOIRES DESCENTES",
   couvertines: "COUVERTINES",
   accessoires_couvertines: "ACCESSOIRES COUVERTINES",
-  bandeaux: "BANDEAUX"
+  bandeaux: "BANDEAUX",
+  sous_faces: "SOUS-FACES"
 };
 
 function escapeHtml(value) {
@@ -553,7 +568,7 @@ if ("serviceWorker" in navigator) {
 
 function init() {
   Object.keys(SCHEMAS).forEach(renderSection);
-  const raw=localStorage.getItem("rmlPreparationChantierV10");
+  const raw=localStorage.getItem("rmlPreparationChantierV11");
   if(raw) {
     try { loadProject(JSON.parse(raw)); return; } catch(e) {}
   }

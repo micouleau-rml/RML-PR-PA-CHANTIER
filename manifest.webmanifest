@@ -1,14 +1,12 @@
 {
-  "name": "RML Préparation Chantier",
+  "name": "RML Préparation Chantier V11",
   "short_name": "Prépa Chantier",
-  "description": "Fiche de préparation chantier RML Gouttière ALU",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#eef2f5",
   "theme_color": "#113a5d",
   "lang": "fr-FR",
-  "orientation": "any",
   "icons": [
     {
       "src": "./icons/icon-192.png",
