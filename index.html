@@ -104,7 +104,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV3</p>
+      <p>Préparation chantier — V11 REV4</p>
     </div>
   </div></div>
 </header>
@@ -127,8 +127,12 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
       <div><label>Nom du chantier</label><input id="chantier"></div>
       <div><label>Adresse du chantier</label><input id="adresse"></div>
       <div><label>Date prévue</label><input id="date" type="date"></div>
+      <div><label>Contact chantier</label><input id="contact_chantier"></div>
+      <div><label>Téléphone du contact chantier</label><input id="telephone_contact" type="tel"></div>
       <div><label>Chef d'équipe</label><input id="chef"></div>
       <div><label>Téléphone client</label><input id="telephone" type="tel"></div>
+      <div><label>Horaires d'intervention</label><input id="horaires" placeholder="Ex. 8h00 – 17h00"></div>
+      <div><label>Code portail / Accès chantier</label><input id="acces" placeholder="Code, consignes d'accès..."></div>
     </div>
   </section>
 
@@ -334,7 +338,9 @@ function getProject() {
     savedAt:new Date().toISOString(),
     info:{
       client:client.value, chantier:chantier.value, adresse:adresse.value,
-      date:date.value, chef:chef.value, telephone:telephone.value,
+      date:date.value, contact_chantier:contact_chantier.value,
+      telephone_contact:telephone_contact.value, chef:chef.value,
+      telephone:telephone.value, horaires:horaires.value, acces:acces.value,
       remarques:remarques.value
     },
     sections
@@ -344,8 +350,10 @@ function getProject() {
 function loadProject(data) {
   const info=data.info||{};
   client.value=info.client||""; chantier.value=info.chantier||""; adresse.value=info.adresse||"";
-  date.value=info.date||""; chef.value=info.chef||""; telephone.value=info.telephone||"";
-  remarques.value=info.remarques||"";
+  date.value=info.date||""; contact_chantier.value=info.contact_chantier||"";
+  telephone_contact.value=info.telephone_contact||""; chef.value=info.chef||"";
+  telephone.value=info.telephone||""; horaires.value=info.horaires||"";
+  acces.value=info.acces||""; remarques.value=info.remarques||"";
   Object.keys(SCHEMAS).forEach(section=>{
     renderSection(section);
     const rows=(data.sections&&data.sections[section])||[];
@@ -399,8 +407,12 @@ function newProject() {
   chantier.value = "";
   adresse.value = "";
   date.value = "";
+  contact_chantier.value = "";
+  telephone_contact.value = "";
   chef.value = "";
   telephone.value = "";
+  horaires.value = "";
+  acces.value = "";
   remarques.value = "";
 
   Object.keys(SCHEMAS).forEach(section => {
@@ -456,8 +468,12 @@ function printProject() {
     ["Chantier", info.chantier],
     ["Adresse", info.adresse],
     ["Date prévue", info.date],
+    ["Contact chantier", info.contact_chantier],
+    ["Téléphone contact chantier", info.telephone_contact],
     ["Chef d'équipe", info.chef],
-    ["Téléphone", info.telephone]
+    ["Téléphone client", info.telephone],
+    ["Horaires d'intervention", info.horaires],
+    ["Code portail / Accès", info.acces]
   ].filter(([,value]) => String(value || "").trim() !== "");
 
   let content = `
@@ -574,7 +590,7 @@ function init() {
     try { loadProject(JSON.parse(raw)); return; } catch(e) {}
   }
   Object.keys(SCHEMAS).forEach(k=>addRow(k));
-  document.querySelectorAll('#client,#chantier,#adresse,#date,#chef,#telephone,#remarques')
+  document.querySelectorAll('#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
     .forEach(el=>el.addEventListener('change',autoSave));
 }
 init();
