@@ -94,7 +94,65 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 .install-card{width:min(520px,100%);background:#fff;border-radius:14px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
 .install-card h2{text-align:center;margin-bottom:14px}
 .install-card p{line-height:1.5;white-space:pre-line}
-@media print{.install-modal{display:none!important}}
+@media print{.install-modal,.preview-modal{display:none!important}}
+
+.preview-modal{
+  position:fixed;
+  inset:0;
+  z-index:110;
+  background:rgba(0,0,0,.68);
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+}
+.preview-modal.hidden{display:none}
+.preview-toolbar{
+  width:min(1000px,100%);
+  margin:0 auto 10px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.preview-scroll{
+  width:min(1000px,100%);
+  margin:0 auto;
+  overflow:auto;
+  background:#d8dde2;
+  border-radius:10px;
+  padding:18px;
+  flex:1;
+}
+.preview-sheet{
+  width:210mm;
+  min-height:297mm;
+  max-width:100%;
+  margin:0 auto;
+  background:#fff;
+  padding:12mm;
+  box-sizing:border-box;
+  color:#111;
+  box-shadow:0 4px 22px rgba(0,0,0,.28);
+}
+.preview-sheet .print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
+.preview-sheet .print-doc-header img{width:120px;max-height:65px;object-fit:contain}
+.preview-sheet .print-doc-header h1{font-size:18px;margin:4px 0}
+.preview-sheet .print-doc-header h2{font-size:15px;margin:3px 0;border:0;padding:0;color:#000}
+.preview-sheet .print-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-bottom:12px;font-size:11px}
+.preview-sheet .print-info div{border-bottom:1px solid #bbb;padding:3px 0}
+.preview-sheet .print-section{margin:0 0 12px;break-inside:avoid}
+.preview-sheet .print-section h3{margin:0 0 5px;font-size:13px;background:#e9eef2;padding:5px;border:1px solid #888}
+.preview-sheet .print-section table{width:100%;min-width:0;border-collapse:collapse;font-size:10px}
+.preview-sheet .print-section th,.preview-sheet .print-section td{border:1px solid #888;padding:4px;text-align:left}
+.preview-sheet .print-section th{background:#f3f3f3;color:#111}
+.preview-sheet .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
+@media(max-width:720px){
+  .preview-modal{padding:8px}
+  .preview-scroll{padding:8px}
+  .preview-sheet{padding:7mm}
+  .preview-sheet .print-info{grid-template-columns:1fr}
+  .preview-toolbar button{flex:1}
+}
 
 </style>
 </head>
@@ -104,7 +162,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV5</p>
+      <p>Préparation chantier — V11 REV7</p>
     </div>
   </div></div>
 </header>
@@ -113,6 +171,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   <div class="toolbar">
     <button class="primary" onclick="saveJson()">💾 Sauvegarder JSON</button>
     <button class="secondary" onclick="document.getElementById('jsonFile').click()">📂 Ouvrir JSON</button>
+    <button class="secondary" onclick="showPreview()">👁️ Visualiser la fiche</button>
     <button class="secondary" onclick="printProject()">📄 Imprimer / PDF A4</button>
     <button class="danger" onclick="newProject()">Nouveau chantier</button>
     <button class="secondary" id="installHelpBtn" onclick="showInstallHelp()">📲 Installer l’application</button>
@@ -197,10 +256,20 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   </div>
 </div>
 
+<div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+  <div class="preview-toolbar">
+    <button class="primary" onclick="printFromPreview()">📄 Imprimer / Enregistrer en PDF</button>
+    <button class="secondary" onclick="hidePreview()">← Retour à la fiche</button>
+  </div>
+  <div class="preview-scroll">
+    <div id="previewContent" class="preview-sheet" aria-label="Aperçu de la fiche chantier"></div>
+  </div>
+</div>
+
 <div id="printSummary" class="print-summary"></div>
 
 <script>
-const COLORS = ['BLANC', 'IVOIRE', 'MIEL', 'MARRON', 'ARDOISE', 'ROUGE TUILE', 'BEIGE ROSÉ', 'ROUGE BORDEAUX', 'VERT MOUSSE', 'ROUGE CARMIN', 'JAUNE COLZA', 'BLEU AZUR', 'NOIR', 'GRIS MÉTAL', 'VERT OLIVE', 'OCRE', 'VERT RÉSÉDA', 'BLEU GENTIANE', 'VERT SAPIN', 'CUIVRE FRANÇAIS', 'BRONZE', 'BLEU PIGEON', 'IMITATION ZINC', 'SABLE', 'BEIGE CENDRÉ', 'TITANE', 'NOIR SABLÉ', 'CRÈME', 'GRIS CLAIR', 'BLEU 5008', 'ZINC PATINA', 'GRIS 2900', 'GRIS GALET 7035', 'GRIS 9007'];
+const COLORS = ['NEUTRE','BLANC', 'IVOIRE', 'MIEL', 'MARRON', 'ARDOISE', 'ROUGE TUILE', 'BEIGE ROSÉ', 'ROUGE BORDEAUX', 'VERT MOUSSE', 'ROUGE CARMIN', 'JAUNE COLZA', 'BLEU AZUR', 'NOIR', 'GRIS MÉTAL', 'VERT OLIVE', 'OCRE', 'VERT RÉSÉDA', 'BLEU GENTIANE', 'VERT SAPIN', 'CUIVRE FRANÇAIS', 'BRONZE', 'BLEU PIGEON', 'IMITATION ZINC', 'SABLE', 'BEIGE CENDRÉ', 'TITANE', 'NOIR SABLÉ', 'CRÈME', 'GRIS CLAIR', 'BLEU 5008', 'ZINC PATINA', 'GRIS 2900', 'GRIS GALET 7035', 'GRIS 9007'];
 const CATALOG = {'gouttieres': ['GF300', 'GF380', 'GFDR300', 'GFT330', 'GFC300', 'GFC380'], 'accessoires_gouttieres': ['FOND GAUCHE', 'FOND DROIT', 'FOND STANDARD', 'ANGLE INTÉRIEUR', 'ANGLE EXTÉRIEUR', 'NAISSANCE Ø70', 'NAISSANCE Ø80', 'NAISSANCE Ø90', 'NAISSANCE Ø100', 'MANCHON DE NAISSANCE Ø80', 'MANCHON DE NAISSANCE Ø100', 'GRILLE PARE-FEUILLES GRILLAGÉE 300', 'GRILLE PARE-FEUILLES GRILLAGÉE 380', 'GRILLE PARE-FEUILLES PERFORÉE 300', 'GRILLE PARE-FEUILLES PERFORÉE 380'], 'descentes_formes': ['RONDE', 'RECTANGLE'], 'descentes_rondes': ['Ø80', 'Ø100', 'Ø120', 'Ø140', 'Ø160', 'Ø180', 'Ø200'], 'descentes_rectangles': ['60×80', '70×110'], 'accessoires_descentes': ['COUDE RECTANGLE 60×80', 'COUDE RECTANGLE 70×110', 'COUDE ROND Ø80', 'COUDE ROND Ø100', 'COUDE ROND Ø120', 'DAUPHIN ALU Ø80', 'DAUPHIN ALU Ø100', 'DAUPHIN FONTE Ø80', 'DAUPHIN FONTE Ø100', 'BOÎTE À EAU STANDARD 20×20×20', 'BOÎTE À EAU SUR MESURE'], 'couvertines': ['340', '360', '380', '400', '420', '440', '460', '480', '500', '520', '540', '560', '580', '600'], 'crochets': ['AVEC PENTE', 'SANS PENTE'], 'accessoires_couvertines': ['ANGLE', 'FOND STANDARD'], 'bandeaux': ['LAMBREQUIN ALUMINIUM TYPE ORNON','BANDEAU ALU 10/10','BANDEAU ALU 15/10'], 'sous_faces': ['ALUMINIUM','PVC']};
 
 const SCHEMAS = {
@@ -458,7 +527,7 @@ function printableRows(section, rows) {
   return rows.filter(row => isFilledQuantity(row.qty));
 }
 
-function printProject() {
+function buildPrintContent() {
   const data = getProject();
   const logo = document.querySelector(".rml-logo")?.src || "";
   const info = data.info || {};
@@ -516,9 +585,36 @@ function printProject() {
       </section>`;
   }
 
-  document.getElementById("printSummary").innerHTML = content;
+  return content;
+}
+
+function printProject() {
+  document.getElementById("printSummary").innerHTML = buildPrintContent();
   window.print();
 }
+
+function showPreview() {
+  autoSave();
+  document.getElementById("previewContent").innerHTML = buildPrintContent();
+  document.getElementById("previewModal").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function hidePreview() {
+  document.getElementById("previewModal").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+function printFromPreview() {
+  document.getElementById("printSummary").innerHTML = buildPrintContent();
+  window.print();
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !document.getElementById("previewModal").classList.contains("hidden")) {
+    hidePreview();
+  }
+});
 
 
 let deferredInstallPrompt = null;

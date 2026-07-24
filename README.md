@@ -1,10 +1,12 @@
-# RML Préparation Chantier V11 REV5
+# RML Préparation Chantier V11 REV7
 
-Ajout dans Accessoires gouttières :
-- Grille pare-feuilles grillagée 300
-- Grille pare-feuilles grillagée 380
-- Grille pare-feuilles perforée 300
-- Grille pare-feuilles perforée 380
+Nouvelle fonction :
+- bouton « Visualiser la fiche » ;
+- aperçu A4 avant impression ;
+- seules les informations et lignes renseignées apparaissent ;
+- impression ou enregistrement PDF directement depuis l’aperçu ;
+- bouton de retour à l’application ;
+- fermeture avec la touche Échap sur Mac.
 
 Pour GitHub, remplacez au minimum :
 - index.html
