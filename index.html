@@ -146,6 +146,32 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 .preview-sheet .print-section th,.preview-sheet .print-section td{border:1px solid #888;padding:4px;text-align:left}
 .preview-sheet .print-section th{background:#f3f3f3;color:#111}
 .preview-sheet .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
+.preview-sheet .handwrite-box{
+  margin-top:8px;
+  border:1.5px solid #777;
+  min-height:55px;
+  padding:6px;
+  font-size:10px;
+  break-inside:avoid;
+}
+.preview-sheet .handwrite-box-title{
+  font-weight:700;
+  margin-bottom:5px;
+}
+.preview-sheet .handwrite-lines{
+  height:38px;
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 17px,
+    #bbb 18px
+  );
+}
+@media print{
+  .handwrite-box{
+    min-height:55px;
+  }
+}
 @media(max-width:720px){
   .preview-modal{padding:8px}
   .preview-scroll{padding:8px}
@@ -162,7 +188,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV7</p>
+      <p>Préparation chantier — V11 REV8</p>
     </div>
   </div></div>
 </header>
@@ -555,6 +581,8 @@ function buildPrintContent() {
       ${infoItems.map(([label,value]) => `<div><strong>${escapeHtml(label)} :</strong> ${escapeHtml(value)}</div>`).join("")}
     </div>`;
 
+  const HANDWRITE_SECTIONS = new Set(["gouttieres","descentes","couvertines","bandeaux","sous_faces"]);
+
   Object.keys(SCHEMAS).forEach(section => {
     const rows = printableRows(section, data.sections[section] || []);
     if (!rows.length) return;
@@ -574,6 +602,11 @@ function buildPrintContent() {
               </tr>`).join("")}
           </tbody>
         </table>
+        ${HANDWRITE_SECTIONS.has(section) ? `
+          <div class="handwrite-box">
+            <div class="handwrite-box-title">QUANTITÉS POSÉES / SUIVI CHANTIER</div>
+            <div class="handwrite-lines"></div>
+          </div>` : ""}
       </section>`;
   });
 
