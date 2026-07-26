@@ -155,93 +155,46 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 }
 .preview-sheet .handwrite-lines{
   height:38px;
-  background:repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 17px,
-    #bbb 18px
-  );
-}
-@media print{
-  .handwrite-box{
-    min-height:55px;
-  }
-}
-@media(max-width:720px){
-  .preview-modal{padding:8px}
-  .preview-scroll{padding:8px}
-  .preview-sheet{padding:7mm}
-  .preview-sheet .print-info{grid-template-columns:1fr}
-  .preview-toolbar button{flex:1}
-}
-
-
-.sheet-type-box{
-  border:2px solid #1f4f6f;
-  background:#eef5f9;
-  border-radius:10px;
-  padding:12px;
-  margin-bottom:14px;
-}
-.sheet-type-box label{
-  display:block;
-  font-weight:800;
-  text-align:center;
-  margin-bottom:8px;
-  letter-spacing:.5px;
-}
-.sheet-type-box select{
-  width:100%;
-  min-height:46px;
-  font-size:16px;
-  font-weight:700;
-}
-
-
-@media print{
-  .preview-sheet .handwrite-box,
-  .handwrite-box{
-    display:block !important;
-    visibility:visible !important;
-    opacity:1 !important;
-    min-height:70px !important;
-    height:auto !important;
-    margin-top:8px !important;
-    border:1.5px solid #555 !important;
-    padding:7px !important;
-    break-inside:avoid !important;
-    page-break-inside:avoid !important;
-    overflow:visible !important;
-    background:#fff !important;
-  }
-
-  .preview-sheet .handwrite-box-title,
-  .handwrite-box-title{
-    display:block !important;
-    visibility:visible !important;
-    font-weight:700 !important;
-    margin-bottom:6px !important;
-  }
-
-  .preview-sheet .handwrite-lines,
-  .handwrite-lines{
-    display:block !important;
-    visibility:visible !important;
-    min-height:48px !important;
-    height:48px !important;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 19px,
-        #999 20px
-      ) !important;
+  background:#fff !important;
     -webkit-print-color-adjust:exact !important;
     print-color-adjust:exact !important;
   }
 
   .print-section{
     overflow:visible !important;
+  }
+}
+
+
+.handwrite-box,
+.preview-sheet .handwrite-box{
+  background:#fff !important;
+  color:#000 !important;
+}
+
+.handwrite-lines,
+.preview-sheet .handwrite-lines{
+  background:#fff !important;
+  color:#000 !important;
+}
+
+.handwrite-lines > div,
+.preview-sheet .handwrite-lines > div{
+  background:#fff !important;
+  border-bottom:1px solid #999 !important;
+}
+
+@media print{
+  .handwrite-box,
+  .preview-sheet .handwrite-box,
+  .handwrite-lines,
+  .preview-sheet .handwrite-lines,
+  .handwrite-lines > div,
+  .preview-sheet .handwrite-lines > div{
+    background:#fff !important;
+    color:#000 !important;
+    -webkit-print-color-adjust:economy !important;
+    print-color-adjust:economy !important;
   }
 }
 
@@ -253,7 +206,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV11</p>
+      <p>Préparation chantier — V11 REV12</p>
     </div>
   </div></div>
 </header>
