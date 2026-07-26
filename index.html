@@ -188,7 +188,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV8</p>
+      <p>Préparation chantier — V11 REV9</p>
     </div>
   </div></div>
 </header>
@@ -206,8 +206,16 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   <div id="status" class="status"></div>
 
   <section class="card">
-    <h2 style="text-align:center;letter-spacing:1px;">FICHE DE PRÉPARATION CHANTIER</h2>
+    <h2 id="screenSheetTitle" style="text-align:center;letter-spacing:1px;">FICHE DE PRÉPARATION CHANTIER</h2>
     <div class="grid">
+      <div>
+        <label>Type de fiche</label>
+        <select id="type_fiche">
+          <option value="preparation">Fiche de préparation chantier</option>
+          <option value="intervention">Fiche d'intervention chantier</option>
+        </select>
+      </div>
+      <div></div>
       <div><label>Nom du client</label><input id="client"></div>
       <div><label>Nom du chantier</label><input id="chantier"></div>
       <div><label>Adresse du chantier</label><input id="adresse"></div>
@@ -432,6 +440,7 @@ function getProject() {
     version:"V11",
     savedAt:new Date().toISOString(),
     info:{
+      type_fiche:type_fiche.value,
       client:client.value, chantier:chantier.value, adresse:adresse.value,
       date:date.value, contact_chantier:contact_chantier.value,
       telephone_contact:telephone_contact.value, chef:chef.value,
@@ -444,6 +453,8 @@ function getProject() {
 
 function loadProject(data) {
   const info=data.info||{};
+  type_fiche.value=info.type_fiche||"preparation";
+  updateSheetTitle();
   client.value=info.client||""; chantier.value=info.chantier||""; adresse.value=info.adresse||"";
   date.value=info.date||""; contact_chantier.value=info.contact_chantier||"";
   telephone_contact.value=info.telephone_contact||""; chef.value=info.chef||"";
@@ -498,6 +509,8 @@ function newProject() {
 
   localStorage.removeItem("rmlPreparationChantierV11");
 
+  type_fiche.value = "preparation";
+  updateSheetTitle();
   client.value = "";
   chantier.value = "";
   adresse.value = "";
@@ -575,13 +588,13 @@ function buildPrintContent() {
     <div class="print-doc-header">
       ${logo ? `<img src="${logo}" alt="Logo RML">` : ""}
       <h1>RML GOUTTIÈRE ALU</h1>
-      <h2>FICHE DE PRÉPARATION CHANTIER</h2>
+      <h2>${info.type_fiche === "intervention" ? "FICHE D'INTERVENTION CHANTIER" : "FICHE DE PRÉPARATION CHANTIER"}</h2>
     </div>
     <div class="print-info">
       ${infoItems.map(([label,value]) => `<div><strong>${escapeHtml(label)} :</strong> ${escapeHtml(value)}</div>`).join("")}
     </div>`;
 
-  const HANDWRITE_SECTIONS = new Set(["gouttieres","descentes","couvertines","bandeaux","sous_faces"]);
+  const HANDWRITE_SECTIONS = new Set(["gouttieres","descentes","accessoires_descentes","couvertines","bandeaux","sous_faces"]);
 
   Object.keys(SCHEMAS).forEach(section => {
     const rows = printableRows(section, data.sections[section] || []);
@@ -602,7 +615,7 @@ function buildPrintContent() {
               </tr>`).join("")}
           </tbody>
         </table>
-        ${HANDWRITE_SECTIONS.has(section) ? `
+        ${info.type_fiche === "intervention" && HANDWRITE_SECTIONS.has(section) ? `
           <div class="handwrite-box">
             <div class="handwrite-box-title">QUANTITÉS POSÉES / SUIVI CHANTIER</div>
             <div class="handwrite-lines"></div>
@@ -712,15 +725,25 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+function updateSheetTitle() {
+  const isIntervention = document.getElementById("type_fiche")?.value === "intervention";
+  const title = isIntervention ? "FICHE D'INTERVENTION CHANTIER" : "FICHE DE PRÉPARATION CHANTIER";
+  const el = document.getElementById("screenSheetTitle");
+  if (el) el.textContent = title;
+}
+
 function init() {
+  updateSheetTitle();
   Object.keys(SCHEMAS).forEach(renderSection);
   const raw=localStorage.getItem("rmlPreparationChantierV11");
   if(raw) {
     try { loadProject(JSON.parse(raw)); return; } catch(e) {}
   }
   Object.keys(SCHEMAS).forEach(k=>addRow(k));
-  document.querySelectorAll('#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
+  document.querySelectorAll('#type_fiche,#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
     .forEach(el=>el.addEventListener('change',autoSave));
+
+  type_fiche.addEventListener("change", updateSheetTitle);
 }
 init();
 </script>
