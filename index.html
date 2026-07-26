@@ -89,12 +89,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 }
 .print-summary{display:none}
 
-.install-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:18px}
-.install-modal.hidden{display:none}
-.install-card{width:min(520px,100%);background:#fff;border-radius:14px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.install-card h2{text-align:center;margin-bottom:14px}
-.install-card p{line-height:1.5;white-space:pre-line}
-@media print{.install-modal,.preview-modal{display:none!important}}
+@media print{.preview-modal{display:none!important}}
 
 .preview-modal{
   position:fixed;
@@ -180,6 +175,28 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   .preview-toolbar button{flex:1}
 }
 
+
+.sheet-type-box{
+  border:2px solid #1f4f6f;
+  background:#eef5f9;
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.sheet-type-box label{
+  display:block;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:8px;
+  letter-spacing:.5px;
+}
+.sheet-type-box select{
+  width:100%;
+  min-height:46px;
+  font-size:16px;
+  font-weight:700;
+}
+
 </style>
 </head>
 <body>
@@ -188,7 +205,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV9</p>
+      <p>Préparation chantier — V11 REV10</p>
     </div>
   </div></div>
 </header>
@@ -200,22 +217,20 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <button class="secondary" onclick="showPreview()">👁️ Visualiser la fiche</button>
     <button class="secondary" onclick="printProject()">📄 Imprimer / PDF A4</button>
     <button class="danger" onclick="newProject()">Nouveau chantier</button>
-    <button class="secondary" id="installHelpBtn" onclick="showInstallHelp()">📲 Installer l’application</button>
     <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
   </div>
   <div id="status" class="status"></div>
 
   <section class="card">
+    <div class="sheet-type-box">
+      <label for="type_fiche">CHOISIR LE TYPE DE FICHE</label>
+      <select id="type_fiche">
+        <option value="preparation">Fiche de préparation chantier</option>
+        <option value="intervention">Fiche d'intervention chantier</option>
+      </select>
+    </div>
     <h2 id="screenSheetTitle" style="text-align:center;letter-spacing:1px;">FICHE DE PRÉPARATION CHANTIER</h2>
     <div class="grid">
-      <div>
-        <label>Type de fiche</label>
-        <select id="type_fiche">
-          <option value="preparation">Fiche de préparation chantier</option>
-          <option value="intervention">Fiche d'intervention chantier</option>
-        </select>
-      </div>
-      <div></div>
       <div><label>Nom du client</label><input id="client"></div>
       <div><label>Nom du chantier</label><input id="chantier"></div>
       <div><label>Adresse du chantier</label><input id="adresse"></div>
@@ -281,14 +296,6 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <textarea id="remarques" rows="6"></textarea>
   </section>
 </main>
-
-<div id="installModal" class="install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="installTitle">
-  <div class="install-card">
-    <h2 id="installTitle">INSTALLER L’APPLICATION</h2>
-    <p id="installInstructions"></p>
-    <button class="primary" onclick="hideInstallHelp()">Fermer</button>
-  </div>
-</div>
 
 <div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
   <div class="preview-toolbar">
@@ -662,68 +669,6 @@ document.addEventListener("keydown", event => {
   }
 });
 
-
-let deferredInstallPrompt = null;
-
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-});
-
-window.addEventListener("appinstalled", () => {
-  deferredInstallPrompt = null;
-  setStatus("Application installée.");
-});
-
-function isIos() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-
-function isStandalone() {
-  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-}
-
-async function showInstallHelp() {
-  if (isStandalone()) {
-    alert("L’application est déjà installée.");
-    return;
-  }
-
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    return;
-  }
-
-  const p = document.getElementById("installInstructions");
-  if (isIos()) {
-    p.textContent =
-      "Sur iPhone ou iPad :\n\n" +
-      "1. Ouvrez cette page dans Safari.\n" +
-      "2. Touchez le bouton Partager (carré avec une flèche vers le haut).\n" +
-      "3. Choisissez « Sur l’écran d’accueil ».\n" +
-      "4. Touchez « Ajouter ».";
-  } else {
-    p.textContent =
-      "Sur Mac :\n\n" +
-      "• Dans Safari, utilisez Fichier > Ajouter au Dock.\n" +
-      "• Dans Chrome ou Edge, utilisez l’icône d’installation située dans la barre d’adresse.";
-  }
-  document.getElementById("installModal").classList.remove("hidden");
-}
-
-function hideInstallHelp() {
-  document.getElementById("installModal").classList.add("hidden");
-}
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(err => {
-      console.warn("Service worker non enregistré :", err);
-    });
-  });
-}
 
 function updateSheetTitle() {
   const isIntervention = document.getElementById("type_fiche")?.value === "intervention";
