@@ -197,6 +197,54 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   font-weight:700;
 }
 
+
+@media print{
+  .preview-sheet .handwrite-box,
+  .handwrite-box{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    min-height:70px !important;
+    height:auto !important;
+    margin-top:8px !important;
+    border:1.5px solid #555 !important;
+    padding:7px !important;
+    break-inside:avoid !important;
+    page-break-inside:avoid !important;
+    overflow:visible !important;
+    background:#fff !important;
+  }
+
+  .preview-sheet .handwrite-box-title,
+  .handwrite-box-title{
+    display:block !important;
+    visibility:visible !important;
+    font-weight:700 !important;
+    margin-bottom:6px !important;
+  }
+
+  .preview-sheet .handwrite-lines,
+  .handwrite-lines{
+    display:block !important;
+    visibility:visible !important;
+    min-height:48px !important;
+    height:48px !important;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 19px,
+        #999 20px
+      ) !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  .print-section{
+    overflow:visible !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -205,7 +253,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV10</p>
+      <p>Préparation chantier — V11 REV11</p>
     </div>
   </div></div>
 </header>
@@ -625,7 +673,10 @@ function buildPrintContent() {
         ${info.type_fiche === "intervention" && HANDWRITE_SECTIONS.has(section) ? `
           <div class="handwrite-box">
             <div class="handwrite-box-title">QUANTITÉS POSÉES / SUIVI CHANTIER</div>
-            <div class="handwrite-lines"></div>
+            <div class="handwrite-lines">
+              <div style="border-bottom:1px solid #999;height:20px;"></div>
+              <div style="border-bottom:1px solid #999;height:20px;"></div>
+            </div>
           </div>` : ""}
       </section>`;
   });
