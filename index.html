@@ -198,6 +198,45 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   }
 }
 
+
+.project-save-panel{
+  background:#fff;
+  border:1px solid #cfd8df;
+  border-radius:12px;
+  padding:12px;
+  margin:0 auto 16px;
+  max-width:1100px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.project-save-title{
+  text-align:center;
+  font-weight:800;
+  margin-bottom:10px;
+  color:#113a5d;
+  letter-spacing:.5px;
+}
+.project-save-grid{
+  display:grid;
+  grid-template-columns:1.3fr auto 1.5fr auto auto;
+  gap:8px;
+  align-items:center;
+}
+.project-save-grid input,
+.project-save-grid select{
+  min-height:42px;
+}
+@media(max-width:850px){
+  .project-save-grid{
+    grid-template-columns:1fr;
+  }
+  .project-save-grid button{
+    width:100%;
+  }
+}
+@media print{
+  .project-save-panel{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -206,7 +245,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV12</p>
+      <p>Préparation chantier — V11 REV14</p>
     </div>
   </div></div>
 </header>
@@ -220,6 +259,20 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <button class="danger" onclick="newProject()">Nouveau chantier</button>
     <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
   </div>
+
+  <div class="project-save-panel">
+    <div class="project-save-title">SAUVEGARDES CHANTIERS</div>
+    <div class="project-save-grid">
+      <input id="projectSaveName" type="text" placeholder="Nom de la sauvegarde">
+      <button class="primary" onclick="saveProjectToLibrary()">💾 Sauvegarder le chantier</button>
+      <select id="savedProjectsSelect">
+        <option value="">Sélectionner un chantier enregistré</option>
+      </select>
+      <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
+      <button class="danger" onclick="deleteProjectFromLibrary()">Supprimer</button>
+    </div>
+  </div>
+
   <div id="status" class="status"></div>
 
   <section class="card">
@@ -312,7 +365,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 
 <script>
 const COLORS = ['NEUTRE','BLANC', 'IVOIRE', 'MIEL', 'MARRON', 'ARDOISE', 'ROUGE TUILE', 'BEIGE ROSÉ', 'ROUGE BORDEAUX', 'VERT MOUSSE', 'ROUGE CARMIN', 'JAUNE COLZA', 'BLEU AZUR', 'NOIR', 'GRIS MÉTAL', 'VERT OLIVE', 'OCRE', 'VERT RÉSÉDA', 'BLEU GENTIANE', 'VERT SAPIN', 'CUIVRE FRANÇAIS', 'BRONZE', 'BLEU PIGEON', 'IMITATION ZINC', 'SABLE', 'BEIGE CENDRÉ', 'TITANE', 'NOIR SABLÉ', 'CRÈME', 'GRIS CLAIR', 'BLEU 5008', 'ZINC PATINA', 'GRIS 2900', 'GRIS GALET 7035', 'GRIS 9007'];
-const CATALOG = {'gouttieres': ['GF300', 'GF380', 'GFDR300', 'GFT330', 'GFC300', 'GFC380'], 'accessoires_gouttieres': ['FOND GAUCHE', 'FOND DROIT', 'FOND STANDARD', 'ANGLE INTÉRIEUR', 'ANGLE EXTÉRIEUR', 'NAISSANCE Ø70', 'NAISSANCE Ø80', 'NAISSANCE Ø90', 'NAISSANCE Ø100', 'MANCHON DE NAISSANCE Ø80', 'MANCHON DE NAISSANCE Ø100', 'GRILLE PARE-FEUILLES GRILLAGÉE 300', 'GRILLE PARE-FEUILLES GRILLAGÉE 380', 'GRILLE PARE-FEUILLES PERFORÉE 300', 'GRILLE PARE-FEUILLES PERFORÉE 380'], 'descentes_formes': ['RONDE', 'RECTANGLE'], 'descentes_rondes': ['Ø80', 'Ø100', 'Ø120', 'Ø140', 'Ø160', 'Ø180', 'Ø200'], 'descentes_rectangles': ['60×80', '70×110'], 'accessoires_descentes': ['COUDE RECTANGLE 60×80', 'COUDE RECTANGLE 70×110', 'COUDE ROND Ø80', 'COUDE ROND Ø100', 'COUDE ROND Ø120', 'DAUPHIN ALU Ø80', 'DAUPHIN ALU Ø100', 'DAUPHIN FONTE Ø80', 'DAUPHIN FONTE Ø100', 'BOÎTE À EAU STANDARD 20×20×20', 'BOÎTE À EAU SUR MESURE'], 'couvertines': ['340', '360', '380', '400', '420', '440', '460', '480', '500', '520', '540', '560', '580', '600'], 'crochets': ['AVEC PENTE', 'SANS PENTE'], 'accessoires_couvertines': ['ANGLE', 'FOND STANDARD'], 'bandeaux': ['LAMBREQUIN ALUMINIUM TYPE ORNON','BANDEAU ALU 10/10','BANDEAU ALU 15/10'], 'sous_faces': ['ALUMINIUM','PVC']};
+const CATALOG = {'gouttieres': ['GF300', 'GF380', 'GFDR300', 'GFT330', 'GFC300', 'GFC380'], 'accessoires_gouttieres': ['FOND GAUCHE', 'FOND DROIT', 'FOND STANDARD', 'ANGLE INTÉRIEUR', 'ANGLE EXTÉRIEUR', 'NAISSANCE Ø70', 'NAISSANCE Ø80', 'NAISSANCE Ø90', 'NAISSANCE Ø100', 'MANCHON DE NAISSANCE Ø80', 'MANCHON DE NAISSANCE Ø100', 'GRILLE PARE-FEUILLES GRILLAGÉE 300', 'GRILLE PARE-FEUILLES GRILLAGÉE 380', 'GRILLE PARE-FEUILLES PERFORÉE 300', 'GRILLE PARE-FEUILLES PERFORÉE 380'], 'descentes_formes': ['RONDE', 'RECTANGLE'], 'descentes_rondes': ['Ø80', 'Ø100', 'Ø120', 'Ø140', 'Ø160', 'Ø180', 'Ø200'], 'descentes_rectangles': ['60×80', '70×110'], 'accessoires_descentes': ['COUDE RECTANGLE 60×80', 'COUDE RECTANGLE 70×110', 'COUDE ROND Ø80', 'COUDE ROND Ø100', 'COUDE ROND Ø120', 'COUDE ROND Ø140', 'COUDE ROND Ø160', 'COUDE ROND Ø180', 'COUDE ROND Ø200', 'JAMBON Ø80', 'JAMBON Ø100', 'DAUPHIN ALU Ø80', 'DAUPHIN ALU Ø100', 'DAUPHIN FONTE Ø80', 'DAUPHIN FONTE Ø100', 'BOÎTE À EAU STANDARD 20×20×20', 'BOÎTE À EAU SUR MESURE'], 'couvertines': ['340', '360', '380', '400', '420', '440', '460', '480', '500', '520', '540', '560', '580', '600'], 'crochets': ['AVEC PENTE', 'SANS PENTE'], 'accessoires_couvertines': ['ANGLE', 'FOND STANDARD'], 'bandeaux': ['LAMBREQUIN ALUMINIUM TYPE ORNON','BANDEAU ALU 10/10','BANDEAU ALU 15/10'], 'sous_faces': ['ALUMINIUM','PVC']};
 
 const SCHEMAS = {
   gouttieres: {
@@ -503,6 +556,110 @@ document.getElementById('jsonFile').addEventListener('change', async e=>{
   e.target.value="";
 });
 
+
+const PROJECT_LIBRARY_KEY = "rmlPreparationChantierProjectsV1";
+
+function getProjectLibrary() {
+  try {
+    return JSON.parse(localStorage.getItem(PROJECT_LIBRARY_KEY) || "{}");
+  } catch(e) {
+    return {};
+  }
+}
+
+function defaultProjectSaveName() {
+  const clientName = (client.value || "").trim();
+  const chantierName = (chantier.value || "").trim();
+  return [clientName, chantierName].filter(Boolean).join(" - ") || "Chantier sans nom";
+}
+
+function refreshSavedProjectsSelect(selectedName = "") {
+  const select = document.getElementById("savedProjectsSelect");
+  if (!select) return;
+
+  const library = getProjectLibrary();
+  const names = Object.keys(library).sort((a,b) => a.localeCompare(b, "fr"));
+
+  select.innerHTML = '<option value="">Sélectionner un chantier enregistré</option>';
+  names.forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+
+  if (selectedName && library[selectedName]) {
+    select.value = selectedName;
+  }
+}
+
+function saveProjectToLibrary() {
+  const input = document.getElementById("projectSaveName");
+  let name = (input.value || "").trim() || defaultProjectSaveName();
+
+  const library = getProjectLibrary();
+
+  if (library[name] && !confirm(`La sauvegarde « ${name} » existe déjà. Voulez-vous la remplacer ?`)) {
+    return;
+  }
+
+  library[name] = {
+    savedAt: new Date().toISOString(),
+    data: getProject()
+  };
+
+  localStorage.setItem(PROJECT_LIBRARY_KEY, JSON.stringify(library));
+  input.value = name;
+  refreshSavedProjectsSelect(name);
+  setStatus(`Chantier « ${name} » sauvegardé.`);
+}
+
+function loadProjectFromLibrary() {
+  const select = document.getElementById("savedProjectsSelect");
+  const name = select.value;
+
+  if (!name) {
+    alert("Sélectionnez d'abord un chantier enregistré.");
+    return;
+  }
+
+  const library = getProjectLibrary();
+  const entry = library[name];
+
+  if (!entry || !entry.data) {
+    alert("Cette sauvegarde est introuvable.");
+    refreshSavedProjectsSelect();
+    return;
+  }
+
+  loadProject(entry.data);
+  document.getElementById("projectSaveName").value = name;
+  select.value = name;
+  setStatus(`Chantier « ${name} » ouvert.`);
+}
+
+function deleteProjectFromLibrary() {
+  const select = document.getElementById("savedProjectsSelect");
+  const name = select.value;
+
+  if (!name) {
+    alert("Sélectionnez d'abord un chantier enregistré.");
+    return;
+  }
+
+  if (!confirm(`Supprimer définitivement la sauvegarde « ${name} » ?`)) {
+    return;
+  }
+
+  const library = getProjectLibrary();
+  delete library[name];
+  localStorage.setItem(PROJECT_LIBRARY_KEY, JSON.stringify(library));
+
+  document.getElementById("projectSaveName").value = "";
+  refreshSavedProjectsSelect();
+  setStatus(`Sauvegarde « ${name} » supprimée.`);
+}
+
 function autoSave() {
   localStorage.setItem("rmlPreparationChantierV11",JSON.stringify(getProject()));
 }
@@ -538,6 +695,8 @@ function newProject() {
 
   document.getElementById("jsonFile").value = "";
   document.getElementById("printSummary").innerHTML = "";
+  document.getElementById("projectSaveName").value = "";
+  document.getElementById("savedProjectsSelect").value = "";
 
   setStatus("Nouveau chantier créé.");
 }
@@ -683,16 +842,40 @@ function updateSheetTitle() {
 
 function init() {
   updateSheetTitle();
+  refreshSavedProjectsSelect();
   Object.keys(SCHEMAS).forEach(renderSection);
+
+  let restored = false;
   const raw=localStorage.getItem("rmlPreparationChantierV11");
   if(raw) {
-    try { loadProject(JSON.parse(raw)); return; } catch(e) {}
+    try {
+      loadProject(JSON.parse(raw));
+      restored = true;
+    } catch(e) {}
   }
-  Object.keys(SCHEMAS).forEach(k=>addRow(k));
+
+  if (!restored) {
+    Object.keys(SCHEMAS).forEach(k=>addRow(k));
+  }
+
   document.querySelectorAll('#type_fiche,#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
     .forEach(el=>el.addEventListener('change',autoSave));
 
   type_fiche.addEventListener("change", updateSheetTitle);
+
+  [client, chantier].forEach(el => {
+    el.addEventListener("change", () => {
+      const nameInput = document.getElementById("projectSaveName");
+      if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = defaultProjectSaveName();
+      }
+    });
+  });
+
+  const nameInput = document.getElementById("projectSaveName");
+  if (nameInput && !nameInput.value.trim()) {
+    nameInput.value = defaultProjectSaveName();
+  }
 }
 init();
 </script>
