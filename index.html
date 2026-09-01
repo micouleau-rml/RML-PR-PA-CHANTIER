@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RML Préparation Chantier V11</title>
+<title>RML Préparation Chantier V13</title>
 
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/icon-192.png" sizes="192x192">
@@ -252,6 +252,12 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 .folder-toolbar input,.folder-toolbar select{min-height:42px}
 .folder-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#e5edf3;color:#0a2840;font-size:11px;font-weight:700;margin-left:6px}
 @media(max-width:850px){.folder-toolbar{grid-template-columns:1fr}.folder-toolbar button{width:100%}}
+.saved-projects-list{margin-top:12px;display:grid;gap:8px}
+.saved-project-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border:1px solid #d9e0e6;border-radius:9px;padding:9px;background:#f8fafb}
+.saved-project-row .project-name{font-weight:800;color:#113a5d}
+.saved-project-row .project-folder{font-size:12px;color:#66727e;margin-top:2px}
+.saved-projects-empty{text-align:center;color:#66727e;padding:12px;border:1px dashed #bdc7d1;border-radius:9px}
+@media(max-width:650px){.saved-project-row{grid-template-columns:1fr}.saved-project-row button{width:100%}}
 
 </style>
 </head>
@@ -261,7 +267,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V12 DOSSIERS + SUPABASE</p>
+      <p>Préparation chantier — V13 DOSSIERS CORRIGÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -293,8 +299,10 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
       </select>
       <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
       <button class="danger" onclick="deleteProjectFromLibrary()">Supprimer</button>
+      <button class="secondary" onclick="moveSelectedProjectToFolder()">📁 Classer / déplacer</button>
       <button class="secondary" onclick="syncWithSupabase()">☁️ Synchroniser</button>
     </div>
+    <div id="savedProjectsList" class="saved-projects-list"></div>
     <div id="cloudStatus" class="cloud-sync-status">☁️ Supabase : en attente</div>
   </div>
 
@@ -523,7 +531,7 @@ function getProject() {
   const sections={};
   Object.keys(SCHEMAS).forEach(k=>sections[k]=collectSection(k));
   return {
-    version:"V11",
+    version:"V13",
     savedAt:new Date().toISOString(),
     info:{
       type_fiche:type_fiche.value,
@@ -716,6 +724,23 @@ function deleteSelectedFolder(){
   const library=getProjectLibrary(); Object.values(library).forEach(e=>{if(e.folderId===id){e.folderId="";e.updatedAt=new Date().toISOString();}}); saveProjectLibrary(library);
   delete folders[id]; saveProjectFolders(folders); filter.value="ALL"; refreshFolderControls(); refreshSavedProjectsSelect(); setStatus(`Dossier « ${folder.name} » supprimé. Chantiers conservés.`);
 }
+function renderSavedProjectsList(entries, folders) {
+  const host = document.getElementById("savedProjectsList");
+  if (!host) return;
+  if (!entries.length) {
+    host.innerHTML = '<div class="saved-projects-empty">Aucun chantier dans ce dossier.</div>';
+    return;
+  }
+  host.innerHTML = entries.map(entry => {
+    const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
+    return `<div class="saved-project-row">
+      <div><div class="project-name">${escapeHtml(entry.name)}</div><div class="project-folder">📁 ${escapeHtml(folderName)}</div></div>
+      <button class="secondary small" onclick="openProjectById('${entry.id}')">📂 Ouvrir</button>
+      <button class="secondary small" onclick="selectProjectForMove('${entry.id}')">📁 Classer</button>
+    </div>`;
+  }).join("");
+}
+
 function refreshSavedProjectsSelect(selectedId = "") {
   refreshFolderControls();
   const select = document.getElementById("savedProjectsSelect");
@@ -735,6 +760,54 @@ function refreshSavedProjectsSelect(selectedId = "") {
     select.appendChild(option);
   });
   if (selectedId && entries.some(e=>e.id===selectedId)) select.value = selectedId;
+  renderSavedProjectsList(entries, folders);
+}
+
+function openProjectById(id) {
+  const library = getProjectLibrary();
+  const entry = library[id];
+  if (!entry || !entry.data) { alert("Cette sauvegarde est introuvable."); refreshSavedProjectsSelect(); return; }
+  loadProject(entry.data);
+  document.getElementById("projectSaveName").value = entry.name;
+  document.getElementById("savedProjectsSelect").value = id;
+  refreshFolderControls(entry.folderId || "");
+  setStatus(`Chantier « ${entry.name} » ouvert.`);
+  window.scrollTo({top: document.querySelector('.project-save-panel')?.offsetTop || 0, behavior:'smooth'});
+}
+
+function selectProjectForMove(id) {
+  const library = getProjectLibrary();
+  const entry = library[id];
+  if (!entry) return;
+  const select = document.getElementById("savedProjectsSelect");
+  if (select) select.value = id;
+  document.getElementById("projectSaveName").value = entry.name;
+  refreshFolderControls(entry.folderId || "");
+  setStatus(`Choisissez le dossier puis cliquez sur « Classer / déplacer ».`);
+}
+
+async function moveSelectedProjectToFolder() {
+  const select = document.getElementById("savedProjectsSelect");
+  const id = select?.value || "";
+  if (!id) { alert("Sélectionnez d'abord un chantier à classer."); return; }
+  const library = getProjectLibrary();
+  const entry = library[id];
+  if (!entry) { refreshSavedProjectsSelect(); return; }
+  entry.folderId = document.getElementById("projectFolderSelect")?.value || "";
+  entry.updatedAt = new Date().toISOString();
+  library[id] = entry;
+  saveProjectLibrary(library);
+  try {
+    await pushCloudRows([cloudRowFromEntry(entry)]);
+    setCloudStatus("☁️ Supabase : classement synchronisé", "ok");
+  } catch(err) {
+    console.error(err);
+    setCloudStatus("☁️ Supabase : classement local, synchronisation en attente", "warn");
+  }
+  refreshSavedProjectsSelect(id);
+  const folders=getProjectFolders();
+  const folderName=entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
+  setStatus(`Chantier « ${entry.name} » classé dans « ${folderName} ».`);
 }
 
 function setCloudStatus(text, kind="") {
@@ -768,10 +841,12 @@ async function supabaseRequest(path, options={}) {
 }
 
 function cloudRowFromEntry(entry) {
+  const folders = getProjectFolders();
+  const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "";
   return {
     id: entry.id,
     name: entry.name,
-    data: {...(entry.data || {}), _libraryFolderId: entry.folderId || ""},
+    data: {...(entry.data || {}), _libraryFolderId: entry.folderId || "", _libraryFolderName: folderName},
     updated_at: entry.updatedAt,
     deleted_at: null,
     device_id: getDeviceId()
@@ -827,6 +902,12 @@ async function syncWithSupabase(options={}) {
       }
 
       if (!local || ts(remoteUpdated) > ts(local.updatedAt)) {
+        const remoteFolderId = (row.data && row.data._libraryFolderId) || "";
+        const remoteFolderName = (row.data && row.data._libraryFolderName) || "";
+        if (remoteFolderId && remoteFolderName) {
+          const folders = getProjectFolders();
+          if (!folders[remoteFolderId]) { folders[remoteFolderId] = {id:remoteFolderId,name:remoteFolderName,createdAt:remoteUpdated}; saveProjectFolders(folders); }
+        }
         library[row.id] = {
           id: row.id,
           name: row.name || "Chantier sans nom",
@@ -905,21 +986,9 @@ async function saveProjectToLibrary() {
 }
 
 function loadProjectFromLibrary() {
-  const select = document.getElementById("savedProjectsSelect");
-  const id = select.value;
+  const id = document.getElementById("savedProjectsSelect")?.value || "";
   if (!id) { alert("Sélectionnez d'abord un chantier enregistré."); return; }
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry || !entry.data) {
-    alert("Cette sauvegarde est introuvable.");
-    refreshSavedProjectsSelect();
-    return;
-  }
-  loadProject(entry.data);
-  document.getElementById("projectSaveName").value = entry.name;
-  refreshFolderControls(entry.folderId || "");
-  select.value = id;
-  setStatus(`Chantier « ${entry.name} » ouvert.`);
+  openProjectById(id);
 }
 
 async function deleteProjectFromLibrary() {
@@ -1146,9 +1215,7 @@ function init() {
     } catch(e) {}
   }
 
-  if (!restored) {
-    Object.keys(SCHEMAS).forEach(k=>addRow(k));
-  }
+  if (!restored) Object.keys(SCHEMAS).forEach(k=>addRow(k));
 
   document.querySelectorAll('#type_fiche,#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
     .forEach(el=>el.addEventListener('change',autoSave));
@@ -1157,25 +1224,19 @@ function init() {
 
   [client, chantier].forEach(el => {
     el.addEventListener("change", () => {
-    
+      const nameInput = document.getElementById("projectSaveName");
+      if (nameInput && !nameInput.value.trim()) nameInput.value = defaultProjectSaveName();
+    });
+  });
+
   document.getElementById("savedProjectsSelect")?.addEventListener("change", e => {
     const entry=getProjectLibrary()[e.target.value];
     if(entry) refreshFolderControls(entry.folderId || "");
   });
 
   const nameInput = document.getElementById("projectSaveName");
-      if (nameInput && !nameInput.value.trim()) {
-        nameInput.value = defaultProjectSaveName();
-      }
-    });
-  });
+  if (nameInput && !nameInput.value.trim()) nameInput.value = defaultProjectSaveName();
 
-  const nameInput = document.getElementById("projectSaveName");
-  if (nameInput && !nameInput.value.trim()) {
-    nameInput.value = defaultProjectSaveName();
-  }
-
-  // Synchronisation au démarrage, puis périodiquement et au retour du réseau.
   syncWithSupabase({silent:true});
   window.addEventListener("online", () => syncWithSupabase({silent:true}));
   setInterval(() => syncWithSupabase({silent:true}), 60000);
