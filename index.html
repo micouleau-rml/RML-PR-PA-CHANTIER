@@ -278,7 +278,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V17 DOSSIERS SIMPLIFIÉS + SUPABASE</p>
+      <p>Préparation chantier — V18 DOSSIERS SIMPLIFIÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -950,21 +950,54 @@ function refreshSavedProjectsSelect(selectedId = "") {
   refreshFolderManager();
   const select = document.getElementById("savedProjectsSelect");
   if (!select) return;
+
   const library = getProjectLibrary();
   const folders = getProjectFolders();
   const filter = document.getElementById("folderFilter")?.value || "ALL";
-  const entries = Object.values(library)
+  const allEntries = Object.values(library);
+  const entries = allEntries
     .filter(e => filter === "ALL" || (filter === "NONE" ? !e.folderId : e.folderId === filter))
     .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
+
   select.innerHTML = '<option value="">Sélectionner un chantier enregistré</option>';
-  entries.forEach(entry => {
-    const option = document.createElement("option");
-    option.value = entry.id;
-    const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
-    option.textContent = `${entry.name} — [${folderName}]`;
-    select.appendChild(option);
-  });
-  if (selectedId && entries.some(e=>e.id===selectedId)) select.value = selectedId;
+
+  // Affichage par dossiers dans la liste de sélection des chantiers.
+  // Les dossiers sont des rubriques (optgroup) et les chantiers apparaissent dessous.
+  const addGroup = (label, groupEntries) => {
+    const group = document.createElement("optgroup");
+    group.label = `📁 ${label}`;
+    if (!groupEntries.length) {
+      const empty = document.createElement("option");
+      empty.disabled = true;
+      empty.textContent = "— dossier vide —";
+      group.appendChild(empty);
+    } else {
+      groupEntries
+        .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"))
+        .forEach(entry => {
+          const option = document.createElement("option");
+          option.value = entry.id;
+          option.textContent = `↳ ${entry.name}`;
+          group.appendChild(option);
+        });
+    }
+    select.appendChild(group);
+  };
+
+  if (filter === "ALL") {
+    const folderEntries = Object.values(folders).sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
+    folderEntries.forEach(folder => {
+      addGroup(folder.name, allEntries.filter(e => e.folderId === folder.id));
+    });
+    const withoutFolder = allEntries.filter(e => !e.folderId);
+    if (withoutFolder.length) addGroup("Sans dossier", withoutFolder);
+  } else if (filter === "NONE") {
+    addGroup("Sans dossier", entries);
+  } else {
+    addGroup(folders[filter]?.name || "Dossier", entries);
+  }
+
+  if (selectedId && entries.some(e => e.id === selectedId)) select.value = selectedId;
   renderSavedProjectsList(entries, folders);
 }
 
