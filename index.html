@@ -267,7 +267,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V13 DOSSIERS CORRIGÉS + SUPABASE</p>
+      <p>Préparation chantier — V14 DOSSIERS SÉCURISÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -733,8 +733,17 @@ function renderSavedProjectsList(entries, folders) {
   }
   host.innerHTML = entries.map(entry => {
     const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
+    const savedClient = entry.data?.info?.client || "";
+    const savedChantier = entry.data?.info?.chantier || "";
+    const contentLabel = [savedClient, savedChantier].filter(Boolean).join(" — ") || "Contenu non identifié";
+    const expected = (entry.name || "").toLowerCase();
+    const mismatch = savedClient && !expected.includes(savedClient.toLowerCase().slice(0, Math.min(12, savedClient.length)));
     return `<div class="saved-project-row">
-      <div><div class="project-name">${escapeHtml(entry.name)}</div><div class="project-folder">📁 ${escapeHtml(folderName)}</div></div>
+      <div>
+        <div class="project-name">${escapeHtml(entry.name)}</div>
+        <div class="project-folder">📁 ${escapeHtml(folderName)}</div>
+        <div style="font-size:12px;margin-top:4px;color:${mismatch ? '#a62121' : '#52606d'};font-weight:${mismatch ? '700' : '600'}">Contenu : ${escapeHtml(contentLabel)}${mismatch ? ' ⚠️' : ''}</div>
+      </div>
       <button class="secondary small" onclick="openProjectById('${entry.id}')">📂 Ouvrir</button>
       <button class="secondary small" onclick="selectProjectForMove('${entry.id}')">📁 Classer</button>
     </div>`;
@@ -766,13 +775,35 @@ function refreshSavedProjectsSelect(selectedId = "") {
 function openProjectById(id) {
   const library = getProjectLibrary();
   const entry = library[id];
-  if (!entry || !entry.data) { alert("Cette sauvegarde est introuvable."); refreshSavedProjectsSelect(); return; }
+  if (!entry || !entry.data) {
+    alert("Cette sauvegarde est introuvable.");
+    refreshSavedProjectsSelect();
+    return;
+  }
+
+  const savedClient = entry.data?.info?.client || "";
+  const savedChantier = entry.data?.info?.chantier || "";
   loadProject(entry.data);
-  document.getElementById("projectSaveName").value = entry.name;
-  document.getElementById("savedProjectsSelect").value = id;
+
+  const nameInput = document.getElementById("projectSaveName");
+  const savedSelect = document.getElementById("savedProjectsSelect");
+  if (nameInput) nameInput.value = entry.name;
   refreshFolderControls(entry.folderId || "");
-  setStatus(`Chantier « ${entry.name} » ouvert.`);
-  window.scrollTo({top: document.querySelector('.project-save-panel')?.offsetTop || 0, behavior:'smooth'});
+  refreshSavedProjectsSelect(id);
+  if (savedSelect) savedSelect.value = id;
+
+  setStatus(`Chantier « ${entry.name} » ouvert${savedClient ? " — " + savedClient : ""}.`);
+  const target = document.getElementById("screenSheetTitle") || document.querySelector(".card");
+  if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
+
+  // Alerte d'intégrité : utile pour repérer les sauvegardes écrasées par l'ancienne V12.
+  const expected = (entry.name || "").toLowerCase();
+  if (savedClient && !expected.includes(savedClient.toLowerCase().slice(0, Math.min(12, savedClient.length)))) {
+    setTimeout(() => alert(`La sauvegarde « ${entry.name} » contient actuellement les données :
+${savedClient}${savedChantier ? " — " + savedChantier : ""}.
+
+Elle a probablement été écrasée lors du classement avec l'ancienne V12.`), 150);
+  }
 }
 
 function selectProjectForMove(id) {
