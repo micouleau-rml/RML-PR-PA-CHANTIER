@@ -278,7 +278,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V16 DOSSIERS FIABLES + SUPABASE</p>
+      <p>Préparation chantier — V17 DOSSIERS SIMPLIFIÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -313,7 +313,6 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
       <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer / déplacer</button>
       <button class="secondary" onclick="syncWithSupabase()">☁️ Synchroniser</button>
     </div>
-    <div id="folderManager" class="folder-manager"></div>
     <div id="savedProjectsList" class="saved-projects-list"></div>
     <div id="cloudStatus" class="cloud-sync-status">☁️ Supabase : en attente</div>
   </div>
@@ -843,6 +842,35 @@ async function confirmMoveProject(){
   catch(err){ console.error(err); setCloudStatus("☁️ Supabase : classement local, synchronisation en attente", "warn"); }
 }
 
+async function deleteProjectById(id) {
+  const library = getProjectLibrary();
+  const entry = library[id];
+  if (!entry) { refreshSavedProjectsSelect(); return; }
+  if (!confirm(`Supprimer définitivement la fiche « ${entry.name} » sur tous les appareils ?`)) return;
+
+  const deletedAt = new Date().toISOString();
+  delete library[id];
+  saveProjectLibrary(library);
+  const tombstones = getTombstones();
+  tombstones[id] = deletedAt;
+  saveTombstones(tombstones);
+
+  const selected = document.getElementById("savedProjectsSelect");
+  if (selected && selected.value === id) selected.value = "";
+  const nameInput = document.getElementById("projectSaveName");
+  if (nameInput && selected && !selected.value) nameInput.value = "";
+  refreshSavedProjectsSelect();
+  setStatus(`Fiche « ${entry.name} » supprimée.`);
+
+  try {
+    await pushCloudRows([{id, name:entry.name, data:null, updated_at:deletedAt, deleted_at:deletedAt, device_id:getDeviceId()}]);
+    setCloudStatus("☁️ Supabase : suppression de la fiche synchronisée", "ok");
+  } catch(err) {
+    console.error(err);
+    setCloudStatus("☁️ Supabase : suppression locale, synchronisation en attente", "warn");
+  }
+}
+
 function renderSavedProjectsList(entries, folders) {
   const host = document.getElementById("savedProjectsList");
   if (!host) return;
@@ -864,7 +892,10 @@ function renderSavedProjectsList(entries, folders) {
         <div style="font-size:12px;margin-top:4px;color:${mismatch ? '#a62121' : '#52606d'};font-weight:${mismatch ? '700' : '600'}">Contenu : ${escapeHtml(contentLabel)}${mismatch ? ' ⚠️' : ''}</div>
       </div>
       <button class="secondary small" onclick="openProjectById('${entry.id}')">📂 Ouvrir</button>
-      <button class="secondary small" onclick="openMoveDialog('${entry.id}')">📁 Classer</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="secondary small" onclick="openMoveDialog('${entry.id}')">📁 Classer</button>
+        <button class="danger small" onclick="deleteProjectById('${entry.id}')">🗑️ Supprimer</button>
+      </div>
     </div>`;
   }).join("");
 }
