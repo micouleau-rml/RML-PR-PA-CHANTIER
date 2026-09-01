@@ -1,1507 +1,1668 @@
-
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RML Préparation Chantier V13</title>
-
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icons/icon-192.png" sizes="192x192">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-<meta name="theme-color" content="#113a5d">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Prépa Chantier">
-<meta name="mobile-web-app-capable" content="yes">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>RML Heures</title>
+<meta name="application-name" content="RML Heures" />
 
 <style>
-:root {
-  --navy:#113a5d; --navy2:#0a2840; --bg:#eef2f5; --card:#fff;
-  --line:#d9e0e6; --text:#1d2730; --muted:#66727e; --danger:#b42318;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);padding-bottom:env(safe-area-inset-bottom)}
-header{position:sticky;top:0;padding-top:calc(16px + env(safe-area-inset-top));z-index:20;background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.18)}
-header h1{margin:0;text-align:center;font-size:24px}
-header p{margin:4px 0 0;text-align:center;font-size:13px;opacity:.9}
-.header-inner{
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-max-width:1180px;
-margin:0 auto;
-}
-.rml-logo{
-display:block;
-width:220px;
-max-width:90%;
-margin-bottom:8px;
-}
-.header-title{text-align:center;}
-main{max-width:1180px;margin:18px auto;padding:0 12px 40px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
-.card{background:var(--card);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-h2{margin:0 0 14px;color:var(--navy);font-size:20px;border-bottom:2px solid var(--navy);padding-bottom:7px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
-input,select,textarea{width:100%;padding:10px;border:1px solid #bdc7d1;border-radius:7px;background:#fff;font-size:15px}
-textarea{resize:vertical}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:900px}
-th,td{border:1px solid var(--line);padding:8px;vertical-align:middle}
-th{background:#edf3f8;color:var(--navy2);font-size:13px;text-align:left}
-td input,td select{padding:8px;font-size:14px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer}
-.primary{background:var(--navy);color:#fff}
-.secondary{background:#e5edf3;color:var(--navy2)}
-.danger{background:var(--danger);color:#fff}
-.small{padding:7px 9px;font-size:12px}
-.status{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0}
-.hidden{display:none}
-@media(max-width:720px){
-  .grid{grid-template-columns:1fr}
-  header h1{font-size:19px}
-  .card{padding:14px}
-  .header-inner{display:flex;flex-direction:column}
-  .rml-logo{width:160px;max-height:none}
-  header{padding:12px 8px}
-}
-@media print{
-  @page{size:A4 portrait;margin:12mm}
-  body{background:#fff}
-  body > header, body > main{display:none!important}
-  .print-summary{display:block!important}
-  .print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
-  .print-doc-header img{width:120px;max-height:65px;object-fit:contain}
-  .print-doc-header h1{font-size:18px;margin:4px 0}
-  .print-doc-header h2{font-size:15px;margin:3px 0;border:0;padding:0;color:#000}
-  .print-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-bottom:12px;font-size:11px}
-  .print-info div{border-bottom:1px solid #bbb;padding:3px 0}
-  .print-section{margin:0 0 12px;break-inside:avoid}
-  .print-section h3{margin:0 0 5px;font-size:13px;background:#e9eef2;padding:5px;border:1px solid #888}
-  .print-section table{width:100%;min-width:0;border-collapse:collapse;font-size:10px}
-  .print-section th,.print-section td{border:1px solid #888;padding:4px;text-align:left}
-  .print-section th{background:#f3f3f3}
-  .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
-}
-.print-summary{display:none}
+:root{--bg:#eef1f5;--card:#fff;--ink:#151b26;--muted:#6b7280;--nav:#111827;--accent:#b91c1c;--accent2:#1d4ed8;--ok:#15803d;--warn:#b45309;--line:#d7dce3;--shadow:0 10px 30px rgba(15,23,42,.10);--r:18px}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,#0f172a,#1f2937);color:#fff;padding:14px 16px 12px;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.brand{max-width:1250px;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}.brand>div:last-child{display:flex;flex-direction:column;align-items:center}.brand .logo{width:82px;height:82px}.logo{width:46px;height:46px;border-radius:13px;background:#fff;color:#111827;font-weight:900;display:grid;place-items:center;letter-spacing:-1px}.brand h1{font-size:20px;margin:0}.brand small{opacity:.75}
+nav{max-width:1250px;margin:10px auto 0;display:flex;gap:8px;overflow:auto}.tab{border:0;background:rgba(255,255,255,.1);color:#fff;padding:9px 13px;border-radius:999px;font-weight:700;white-space:nowrap}.tab.active{background:#fff;color:#111827}
+main{max-width:1250px;margin:18px auto 80px;padding:0 14px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:14px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--card);border:1px solid #e2e6ec;border-radius:var(--r);box-shadow:var(--shadow);padding:16px}.card h2,.card h3{margin:0 0 14px}.section-title{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin-bottom:8px}
+label{display:block;font-size:12px;font-weight:800;color:#4b5563;margin:0 0 6px}input,select,textarea{width:100%;border:1px solid #cfd5dd;border-radius:12px;padding:11px 12px;background:#fff;color:#111827;font-size:16px;outline:none}input:focus,select:focus,textarea:focus{border-color:#64748b;box-shadow:0 0 0 3px rgba(100,116,139,.12)}.field{margin-bottom:12px}
+button.primary,button.secondary,button.danger{border:0;border-radius:12px;padding:12px 15px;font-weight:800;font-size:15px;cursor:pointer}.primary{background:var(--accent2);color:#fff}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}.actions{display:flex;gap:10px;flex-wrap:wrap}.actions button{flex:1;min-width:170px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.kpi{border:1px solid #e2e8f0;background:#f8fafc;border-radius:14px;padding:13px}.kpi b{display:block;font-size:23px;margin-top:3px}.kpi span{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase}.kpi.sup b{color:var(--accent)}.kpi.route b{color:var(--accent2)}.kpi.real b{color:var(--ok)}
+.note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;font-size:13px}.muted{color:var(--muted);font-size:13px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;background:#e5e7eb}.badge.CONT{background:#dbeafe;color:#1e40af}.badge.CLA{background:#ede9fe;color:#5b21b6}.badge.SAM{background:#ffedd5;color:#9a3412}.badge.ABS,.badge.MAL,.badge.AT{background:#fee2e2;color:#991b1b}.badge.CGE{background:#dcfce7;color:#166534}.badge.FORM{background:#fef3c7;color:#92400e}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}th{position:sticky;top:0;background:#f3f4f6;text-align:left;color:#475569;font-size:11px;text-transform:uppercase;padding:10px;border-bottom:1px solid #d9dee5}td{padding:10px;border-bottom:1px solid #edf0f3;white-space:nowrap}.table-wrap{overflow:auto;border:1px solid #e1e5ea;border-radius:14px;max-height:62vh}.row-actions button{border:0;background:#eef2f7;border-radius:8px;padding:6px 8px;cursor:pointer}.empty{text-align:center;color:var(--muted);padding:35px}
+.employee-row{display:grid;grid-template-columns:1fr 140px 42px;gap:8px;align-items:end;margin-bottom:8px}.employee-row button{height:44px;border:0;border-radius:10px;background:#fee2e2;color:#991b1b;font-weight:900}.switchline{display:flex;align-items:center;gap:10px;margin:10px 0}.switchline input{width:auto}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:1px solid #dce1e8;padding:8px 12px;z-index:9}.footer-inner{max-width:1250px;margin:auto;display:flex;justify-content:space-between;align-items:center;color:#64748b;font-size:12px}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.brand h1{font-size:17px}.card{padding:14px}.employee-row{grid-template-columns:1fr 95px 42px}}
+</style>
+<style>
+header{position:relative;overflow:hidden;background:radial-gradient(ellipse at 52% -35%,rgba(0,184,255,.82) 0%,rgba(0,184,255,.24) 31%,transparent 54%),radial-gradient(ellipse at 5% 12%,rgba(63,64,213,.72) 0%,rgba(63,64,213,.22) 35%,transparent 58%),linear-gradient(120deg,#173aa7 0%,#075fc9 48%,#123e9e 100%)!important}
+header:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(155deg,rgba(255,255,255,.06),transparent 42%)}
+header .wrap{position:relative;z-index:1}
+</style>
+<style id="rml-team-v14">
+.entry-mode{display:flex;gap:8px;margin:0 0 14px}
+.entry-mode button{border:0;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer;background:#e8edf6;color:#172033}
+.entry-mode button.active{background:#1454e8;color:#fff}
+#teamPanel{display:none;background:#f4f8ff;border:1px solid #dbe7ff;border-radius:14px;padding:14px;margin-bottom:14px}
+#teamPanel.active{display:block}
+.team-members{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}
+.team-check{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #dfe6f2;border-radius:10px;padding:10px 11px;font-weight:700}
+.team-check input{width:18px;height:18px}
+.team-summary{margin-top:10px;font-weight:800;color:#174086}
+.team-settings{margin-top:18px;padding-top:16px;border-top:1px solid #e2e7ef}
+.team-setting-row{border:1px solid #e1e6ef;border-radius:12px;padding:12px;margin:10px 0;background:#fbfcfe}
+.team-setting-head{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.team-setting-head input{flex:1}
+.team-setting-head button{border:0;background:#fbe2e2;color:#a52323;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}
+.team-setting-members{display:flex;flex-wrap:wrap;gap:7px}
+.team-setting-members label{display:flex;align-items:center;gap:6px;border:1px solid #dfe5ef;border-radius:9px;padding:7px 9px;background:#fff}
+@media(max-width:650px){.entry-mode{flex-wrap:wrap}}
+</style>
 
-@media print{.preview-modal{display:none!important}}
 
-.preview-modal{
-  position:fixed;
-  inset:0;
-  z-index:110;
-  background:rgba(0,0,0,.68);
-  display:flex;
-  flex-direction:column;
-  padding:14px;
+<style id="team-readable-v143">
+.team-setting-members{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
 }
-.preview-modal.hidden{display:none}
-.preview-toolbar{
-  width:min(1000px,100%);
-  margin:0 auto 10px;
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  flex-wrap:wrap;
+.team-setting-members label{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  min-height:46px;
+  padding:10px 12px !important;
+  border:1px solid #dfe5ef !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  word-break:normal !important;
 }
-.preview-scroll{
-  width:min(1000px,100%);
-  margin:0 auto;
-  overflow:auto;
-  background:#d8dde2;
+.team-setting-members label input{
+  flex:0 0 auto;
+  width:18px !important;
+  height:18px !important;
+  margin:0 !important;
+}
+.team-setting-row{
+  overflow:visible !important;
+}
+@media(max-width:700px){
+  .team-setting-members{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+
+<style id="team-collapse-v144">
+.team-settings-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.team-toggle-btn{
+  border:0;
+  background:#e9eef8;
+  color:#173b82;
   border-radius:10px;
-  padding:18px;
-  flex:1;
+  padding:8px 12px;
+  font-weight:800;
+  cursor:pointer;
 }
-.preview-sheet{
-  width:210mm;
-  min-height:297mm;
-  max-width:100%;
-  margin:0 auto;
-  background:#fff;
-  padding:12mm;
-  box-sizing:border-box;
-  color:#111;
-  box-shadow:0 4px 22px rgba(0,0,0,.28);
-}
-.preview-sheet .print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
-.preview-sheet .print-doc-header img{width:120px;max-height:65px;object-fit:contain}
-.preview-sheet .print-doc-header h1{font-size:18px;margin:4px 0}
-.preview-sheet .print-doc-header h2{font-size:15px;margin:3px 0;border:0;padding:0;color:#000}
-.preview-sheet .print-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-bottom:12px;font-size:11px}
-.preview-sheet .print-info div{border-bottom:1px solid #bbb;padding:3px 0}
-.preview-sheet .print-section{margin:0 0 12px;break-inside:avoid}
-.preview-sheet .print-section h3{margin:0 0 5px;font-size:13px;background:#e9eef2;padding:5px;border:1px solid #888}
-.preview-sheet .print-section table{width:100%;min-width:0;border-collapse:collapse;font-size:10px}
-.preview-sheet .print-section th,.preview-sheet .print-section td{border:1px solid #888;padding:4px;text-align:left}
-.preview-sheet .print-section th{background:#f3f3f3;color:#111}
-.preview-sheet .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
-.preview-sheet .handwrite-box{
-  margin-top:8px;
-  border:1.5px solid #777;
-  min-height:55px;
-  padding:6px;
-  font-size:10px;
-  break-inside:avoid;
-}
-.preview-sheet .handwrite-box-title{
-  font-weight:700;
-  margin-bottom:5px;
-}
-.preview-sheet .handwrite-lines{
-  height:38px;
-  background:#fff !important;
-    -webkit-print-color-adjust:exact !important;
-    print-color-adjust:exact !important;
-  }
+.team-settings.collapsed #teamSettingsBody{display:none}
+.team-settings.collapsed{padding-bottom:0}
+</style>
 
-  .print-section{
-    overflow:visible !important;
-  }
-}
+<link rel="apple-touch-icon" sizes="512x512" href="./apple-touch-icon.png?v=145">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png?v=145">
+<link rel="manifest" href="./manifest.webmanifest?v=145">
+<meta name="theme-color" content="#0f5fd0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RML Heures">
+<meta name="application-name" content="RML Heures">
 
 
-.handwrite-box,
-.preview-sheet .handwrite-box{
-  background:#fff !important;
-  color:#000 !important;
-}
+<style id="v146-form-conges">
+#absenceRange{display:none;margin-top:10px;padding:12px;border:1px solid #dbe7ff;background:#f4f8ff;border-radius:12px}
+#absenceRange.active{display:block}
+#absenceRange .hint{font-size:12px;color:#5f6b7a;margin-top:6px}
+</style>
 
-.handwrite-lines,
-.preview-sheet .handwrite-lines{
-  background:#fff !important;
-  color:#000 !important;
-}
+<style id="v149-paniers">
+.panier-pill{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 8px;border-radius:999px;background:#fff7ed;color:#9a3412;font-weight:800}
+</style>
 
-.handwrite-lines > div,
-.preview-sheet .handwrite-lines > div{
-  background:#fff !important;
-  border-bottom:1px solid #999 !important;
-}
+<style id="v150-report-hours">
+.report-card{margin-top:18px;border-top:1px solid #e4e9f2;padding-top:18px}
+.report-help{margin:0 0 12px;color:#667085;font-size:13px}
+.report-input{width:86px!important;min-width:86px;padding:7px 8px!important;text-align:center;font-weight:800}
+.report-positive{font-weight:900;color:#9a3412}
+.report-zero{font-weight:800;color:#166534}
+.report-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+@media(max-width:800px){.report-input{width:78px!important;min-width:78px}}
+</style>
 
-@media print{
-  .handwrite-box,
-  .preview-sheet .handwrite-box,
-  .handwrite-lines,
-  .preview-sheet .handwrite-lines,
-  .handwrite-lines > div,
-  .preview-sheet .handwrite-lines > div{
+
+<style id="v151-print">
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+
+  html, body {
     background:#fff !important;
     color:#000 !important;
-    -webkit-print-color-adjust:economy !important;
-    print-color-adjust:economy !important;
+    width:100% !important;
+    min-width:0 !important;
+    overflow:visible !important;
   }
-}
 
-
-.project-save-panel{
-  background:#fff;
-  border:1px solid #cfd8df;
-  border-radius:12px;
-  padding:12px;
-  margin:0 auto 16px;
-  max-width:1100px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-.project-save-title{
-  text-align:center;
-  font-weight:800;
-  margin-bottom:10px;
-  color:#113a5d;
-  letter-spacing:.5px;
-}
-.project-save-grid{
-  display:grid;
-  grid-template-columns:1.3fr 1fr auto 1.5fr auto auto auto;
-  gap:8px;
-  align-items:center;
-}
-.project-save-grid input,
-.project-save-grid select{
-  min-height:42px;
-}
-
-.cloud-sync-status{
-  margin-top:8px;
-  text-align:center;
-  font-size:13px;
-  font-weight:700;
-  color:#52606d;
-}
-.cloud-sync-status.ok{color:#1f7a3f}
-.cloud-sync-status.warn{color:#a45a00}
-.cloud-sync-status.error{color:#a62121}
-
-@media(max-width:850px){
-  .project-save-grid{
-    grid-template-columns:1fr;
+  header, nav, footer, .actions, button, .sync, #syncStatus, .no-print {
+    display:none !important;
   }
-  .project-save-grid button{
-    width:100%;
+
+  main, .wrap, .container, section, .card, .panel {
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    box-shadow:none !important;
   }
-}
-@media print{
-  .project-save-panel{display:none!important}
-}
-.folder-toolbar{display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;margin-bottom:10px;align-items:center}
-.folder-toolbar input,.folder-toolbar select{min-height:42px}
-.folder-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#e5edf3;color:#0a2840;font-size:11px;font-weight:700;margin-left:6px}
-@media(max-width:850px){.folder-toolbar{grid-template-columns:1fr}.folder-toolbar button{width:100%}}
-.saved-projects-list{margin-top:12px;display:grid;gap:8px}
-.saved-project-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border:1px solid #d9e0e6;border-radius:9px;padding:9px;background:#f8fafb}
-.saved-project-row .project-name{font-weight:800;color:#113a5d}
-.saved-project-row .project-folder{font-size:12px;color:#66727e;margin-top:2px}
 
-.folder-manager{margin:10px 0 8px;border:1px solid #d9e0e6;border-radius:10px;padding:10px;background:#f8fafc}
-.folder-manager-title{font-size:12px;font-weight:800;color:#113a5d;margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px}
-.folder-manager-list{display:flex;gap:7px;flex-wrap:wrap}
-.folder-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cfd8df;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:700}
-.folder-chip button{padding:5px 7px;font-size:11px}
-.move-modal{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
-.move-modal.hidden{display:none}
-.move-dialog{width:min(520px,100%);background:#fff;border-radius:12px;padding:18px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.move-dialog h3{margin:0 0 12px;color:#113a5d}
-.move-dialog .actions{justify-content:flex-end}
-.saved-projects-empty{text-align:center;color:#66727e;padding:12px;border:1px dashed #bdc7d1;border-radius:9px}
-@media(max-width:650px){.saved-project-row{grid-template-columns:1fr}.saved-project-row button{width:100%}}
+  .table-wrap {
+    width:100% !important;
+    overflow:visible !important;
+  }
 
+  table {
+    width:100% !important;
+    border-collapse:collapse !important;
+    font-size:8pt !important;
+  }
+
+  th, td {
+    padding:3px 4px !important;
+    white-space:normal !important;
+    overflow:visible !important;
+  }
+
+  th { font-size:7.5pt !important; }
+  tr { page-break-inside:avoid !important; }
+
+  .report-input {
+    border:0 !important;
+    background:transparent !important;
+    padding:0 !important;
+    width:60px !important;
+    min-width:0 !important;
+    font-size:8pt !important;
+  }
+
+  .panier-pill {
+    background:transparent !important;
+    color:#000 !important;
+    padding:0 !important;
+  }
+
+  .muted { color:#555 !important; }
+
+  /* Imprime seulement l'écran actuellement affiché */
+  section { display:none !important; }
+  section.active { display:block !important; }
+
+  /* Le récapitulatif est large : réduction supplémentaire */
+  #recap table { font-size:7.2pt !important; }
+  #recap th, #recap td { padding:2.5px 3px !important; }
+}
 </style>
+
+
+<style id="v153-report-date">
+.report-date-input{min-width:135px;padding:7px 8px!important;font-weight:700}
+.report-positive{font-weight:900;color:#9a3412}
+.report-zero{font-weight:800;color:#166534}
+@media(max-width:900px){.report-date-input{min-width:125px}}
+</style>
+
+<style id="v154-report-month">
+.reported-hours{font-weight:900;color:#9a3412}
+.not-reported{color:#98a2b3}
+</style>
+
+
+<style id="v155-global-report-date">
+.global-report-date{
+  display:flex;
+  align-items:end;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:12px 0 14px;
+  padding:12px;
+  border:1px solid #dbe7ff;
+  background:#f4f8ff;
+  border-radius:12px;
+}
+.global-report-date .field{margin:0;min-width:220px}
+.global-report-date button{white-space:nowrap}
+@media(max-width:700px){
+  .global-report-date{align-items:stretch}
+  .global-report-date .field{width:100%}
+  .global-report-date button{width:100%}
+}
+</style>
+
+
+<style id="v157-report-integrated">
+.report-row td{
+  background:#fff7ed !important;
+  border-top:2px solid #fdba74 !important;
+  border-bottom:2px solid #fdba74 !important;
+}
+.report-row strong{color:#9a3412}
+.report-month-note{font-size:11px;color:#9a3412;font-weight:700}
+</style>
+
+<style id="v166-json-backup">
+.backup-card{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid #e2e7ef;
+}
+.backup-card h3{margin:0 0 6px}
+.backup-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.backup-actions button{flex:1;min-width:220px}
+.backup-note{
+  margin-top:10px;
+  font-size:12px;
+  color:#667085;
+  line-height:1.4;
+}
+@media(max-width:700px){
+  .backup-actions button{width:100%;min-width:0}
+}
+</style>
+
+
+<style id="v170-new-entry">
+#employee:invalid{color:#98a2b3}
+#employee option{color:#172033}
+#employee option[value=""]{color:#98a2b3}
+</style>
+
+<style>
+.recap-toolbar{display:flex;justify-content:flex-end;gap:10px;margin:10px 0 12px;flex-wrap:wrap}
+.money-col.hidden-money{display:none!important}
+</style>
+<style>
+.recovery-debit{font-weight:900;color:#b42318}
+.recovery-ok{font-weight:800;color:#166534}
+</style>
+
+<style id="v18-version-badge">
+.app-version-top{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:9px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.30);
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  line-height:1;
+  vertical-align:middle;
+  letter-spacing:.3px;
+}
+</style>
+
+
+<style id="v20-paid-leave">
+.leave-positive{color:#166534;font-weight:900}
+.leave-warning{color:#b45309;font-weight:900}
+.leave-negative{color:#b42318;font-weight:900}
+.leave-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.leave-summary .kpi b{font-size:22px}
+.leave-right-input{min-width:90px;max-width:115px}
+.leave-period-help{margin-top:8px}
+@media(max-width:760px){
+ .leave-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+
 </head>
 <body>
 <header>
-  <div class="header-inner">
-    <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
-    <div class="header-title">
-      <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V18 DOSSIERS SIMPLIFIÉS + SUPABASE</p>
-    </div>
-  </div></div>
+ <div class="brand"><div class="logo" style="overflow:visible;background:transparent"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#2349c6"/>
+    <stop offset="1" stop-color="#17388f"/>
+  </linearGradient>
+</defs>
+<rect x="8" y="8" width="204" height="204" rx="42" fill="url(#g)" stroke="white" stroke-width="7"/>
+<circle cx="110" cy="65" r="38" fill="none" stroke="white" stroke-width="7"/>
+<line x1="110" y1="65" x2="110" y2="39" stroke="white" stroke-width="7" stroke-linecap="round"/>
+<line x1="110" y1="65" x2="132" y2="79" stroke="white" stroke-width="7" stroke-linecap="round"/>
+<circle cx="110" cy="65" r="4.5" fill="white"/>
+<text x="110" y="137" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="900" fill="white">RML</text>
+<text x="110" y="181" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="900" fill="#ffd400">HEURES</text>
+</svg></div><div><h1>RML HEURES<span class="app-version-top">V22</span></h1><small>Suivi embauche · débauche · heures supplémentaires</small></div></div>
+ <nav>
+  <button class="tab active" data-view="saisie">Saisie</button>
+  <button class="tab" data-view="mois">Mois</button>
+  <button class="tab" data-view="recap">Récapitulatif</button>
+  <button class="tab" data-view="conges">Congés payés</button>
+  <button class="tab" data-view="reglages">Réglages</button>
+ </nav>
 </header>
-
 <main>
-  <div class="toolbar">
-    <button class="primary" onclick="saveJson()">💾 Sauvegarder JSON</button>
-    <button class="secondary" onclick="document.getElementById('jsonFile').click()">📂 Ouvrir JSON</button>
-    <button class="secondary" onclick="showPreview()">👁️ Visualiser la fiche</button>
-    <button class="secondary" onclick="printProject()">📄 Imprimer / PDF A4</button>
-    <button class="danger" onclick="newProject()">Nouveau chantier</button>
-    <input id="jsonFile" type="file" accept=".json,application/json" class="hidden">
+<section id="saisie" class="view active">
+ <div class="grid grid2">
+  <div class="card">
+   <h2>Saisie de la journée</h2>
+   <div class="entry-mode">
+    <button type="button" id="singleModeBtn" class="active">Salarié seul</button>
+    <button type="button" id="teamModeBtn">Saisie équipe</button>
+   </div>
+   <div id="teamPanel">
+    <div class="field"><label>Équipe habituelle</label><select id="teamPreset"><option value="">— Sélection libre —</option></select></div>
+    <div class="team-members" id="teamMembers"></div>
+    <div class="team-summary" id="teamSummary">0 salarié sélectionné</div>
+   </div>
+   <div class="grid grid2">
+    <div class="field"><label>Salarié</label><select id="employee" required></select></div>
+    <div class="field"><label>Date</label><input id="date" type="date"></div>
+   <div id="absenceRange">
+    <div class="field" style="margin:0"><label>Date de fin</label><input id="absenceEnd" type="date"></div>
+    <div class="hint">Les samedis et dimanches sont ignorés automatiquement.</div>
+   </div>
+   </div>
+   <div class="field"><label>Type de journée</label><select id="type"><option value="CONT">CONT — Journée continue</option><option value="CLA">CLA — Journée classique</option><option value="SAM">SAM — Samedi</option><option value="ABS">ABS — Absence</option><option value="MAL">MAL — Maladie</option><option value="AT">AT — Arrêt de travail</option><option value="CGE">CGE — Congés</option><option value="FORM">FORM — En formation</option></select></div>
+   <div id="timeFields">
+    <div class="grid grid2">
+     <div class="field"><label>Heure d'embauche décalée <span class="muted">(facultatif)</span></label><input id="startOverride" type="time"><div class="muted" style="margin-top:5px">La débauche normale est recalculée automatiquement à partir de cette heure.</div></div>
+     <div class="field"><label>Départ chantier ou atelier</label><input id="depart" type="time"></div>
+    </div>
+    <div class="grid grid2">
+     <div class="field"><label>Arrivée dépôt</label><input id="arrivee" type="time"></div>
+     <div class="field"><label>Déduction sur heures sup</label><input id="deduction" type="time" value="00:00"></div>
+    </div>
+   </div>
+   <div class="field"><label>Commentaire</label><textarea id="comment" rows="2" placeholder="Ex. rendez-vous, départ anticipé, observation..."></textarea></div>
+   <div class="actions"><button class="primary" id="saveBtn">Enregistrer la journée</button><button class="secondary" id="clearBtn">Nouvelle saisie</button></div>
+  </div>
+  <div class="card">
+   <div class="section-title">Calcul instantané</div>
+   <h2 id="calcTitle">Résultat</h2>
+   <div class="kpis">
+    <div class="kpi"><span>Horaire normal</span><b id="normalRange">7h15–14h15</b></div>
+    <div class="kpi sup"><span>H sup chantier</span><b id="sup">0h00</b></div>
+    <div class="kpi route"><span>H route</span><b id="route">0h00</b></div>
+    <div class="kpi real"><span>H sup réelles</span><b id="real">0h00</b></div>
+   </div>
+   <div style="height:12px"></div>
+   <div class="kpis">
+    <div class="kpi"><span>Embauche retenue</span><b id="startKept">7h15</b></div>
+    <div class="kpi"><span>Débauche normale</span><b id="endNormal">14h15</b></div>
+    <div class="kpi"><span>Temps présence</span><b id="presence">0h00</b></div>
+    <div class="kpi"><span>Jour</span><b id="weekType">SE</b></div>
+   </div>
+   <div style="height:12px"></div>
+   <div class="note">Principe repris de ton Excel : les heures sup chantier commencent après l'heure normale de débauche. Les heures de route ne retiennent que la partie du retour située après cette heure. La déduction est soustraite des heures sup chantier.</div>
+  </div>
+ </div>
+</section>
+
+<section id="mois" class="view">
+ <div class="card">
+  <div class="grid grid3">
+   <div class="field"><label>Salarié</label><select id="monthEmployee"></select></div>
+   <div class="field"><label>Mois</label><input id="monthPick" type="month"></div>
+   <div class="field"><label>&nbsp;</label><button class="secondary" id="exportCsv">Exporter CSV</button></div>
+  </div>
+  <div id="monthKpis" class="kpis" style="margin-bottom:14px"></div>
+  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Embauche</th><th>Départ</th><th>Arrivée</th><th>H sup</th><th>H route</th><th>Déduction</th><th>H sup nettes</th><th>À reporter</th><th>Panier</th><th>Commentaire</th><th></th></tr></thead><tbody id="monthBody"></tbody></table></div>
+ </div>
+</section>
+
+<section id="recap" class="view">
+ <div class="card">
+  <div class="grid grid2"><div class="field"><label>Mois</label><input id="recapMonth" type="month"></div><div class="field"><label>&nbsp;</label><button class="secondary" id="printRecap">Imprimer / PDF</button></div></div>
+  <div class="recap-toolbar no-print"><button type="button" class="secondary" id="toggleMoneyColumns">Masquer les montants</button></div><div class="table-wrap"><table><thead><tr><th>Salarié</th><th>Taux horaire</th><th>Jours saisis</th><th>Paniers</th><th>H sup chantier</th><th>H route</th><th class="money-col">Montant route</th><th>Déductions</th><th>H sup réelles</th><th>HC 10%</th><th class="money-col">Montant 10%</th><th>HC 25%</th><th class="money-col">Montant 25%</th><th class="money-col">Total HC</th><th>ABS</th><th>MAL</th><th>AT</th><th>CGE</th><th>FORM</th></tr></thead><tbody id="recapBody"></tbody></table></div>
+
+  <div class="report-card">
+   <h2 style="margin-bottom:5px">Report d'heures au mois suivant</h2>
+   <p class="report-help">La date globale peut être choisie librement sur toute l’année. Une date du mois précédent sert uniquement au report entrant payé ce mois-ci et annule toute ancienne coupure du mois affiché. Un report vers le mois suivant n’existe que si une date du mois affiché est choisie.</p>
+   <div class="global-report-date no-print">
+    <div class="field">
+      <label>Date de report pour tout le monde</label>
+      <input type="date" id="globalReportDate">
+    </div>
+    <button type="button" class="secondary" id="applyGlobalReportDate">Appliquer à tous</button>
+    <button type="button" class="secondary" id="clearGlobalReportDate">Effacer pour tous</button>
+   </div>
+   <div class="table-wrap">
+    <table>
+     <thead><tr><th>Salarié</th><th id="reportPrevHead">Report précédent</th><th id="reportCurrentHead">H sup du mois</th><th>Date de début du report</th><th>H avant la date</th><th>H à partir de la date</th><th>Total à payer ce mois</th><th id="reportNextHead">Heures à reporter</th></tr></thead>
+     <tbody id="reportBody"></tbody>
+    </table>
+   </div>
+   <div class="report-actions"><button class="primary" id="saveReports">Enregistrer les reports</button></div>
+  </div>
+ </div>
+</section>
+
+
+<section id="conges" class="view">
+ <div class="card">
+  <h2>Congés payés — suivi BTP</h2>
+  <div class="grid grid3">
+   <div class="field">
+    <label>Période de suivi</label>
+    <select id="leavePeriod"></select>
+    <div class="muted leave-period-help">Période du 1er avril au 31 mars. Les jours CGE déjà saisis dans RML HEURES alimentent automatiquement ce tableau.</div>
+   </div>
+   <div class="field">
+    <label>&nbsp;</label>
+    <button type="button" class="primary" id="saveLeaveRights">Enregistrer les droits</button>
+   </div>
+   <div class="field">
+    <label>&nbsp;</label>
+    <button type="button" class="secondary" id="printLeave">Imprimer / PDF</button>
+   </div>
   </div>
 
-  <div class="project-save-panel">
-    <div class="project-save-title">SAUVEGARDES CHANTIERS</div>
-    <div class="folder-toolbar">
-      <input id="newFolderName" type="text" placeholder="Nom du nouveau dossier">
-      <button class="secondary" onclick="createProjectFolder()">📁 + Nouveau dossier</button>
-      <select id="folderFilter" onchange="onFolderFilterChange()"><option value="ALL">Tous les dossiers</option></select>
-      <button class="danger" onclick="deleteSelectedFolder()">Supprimer le dossier</button>
-    </div>
-    <div class="project-save-grid">
-      <input id="projectSaveName" type="text" placeholder="Nom de la sauvegarde">
-      <select id="projectFolderSelect"><option value="">Sans dossier</option></select>
-      <button class="primary" onclick="saveProjectToLibrary()">💾 Sauvegarder le chantier</button>
-      <select id="savedProjectsSelect">
-        <option value="">Sélectionner un chantier enregistré</option>
-      </select>
-      <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
-      <button class="danger" onclick="deleteProjectFromLibrary()">Supprimer</button>
-      <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer / déplacer</button>
-      <button class="secondary" onclick="syncWithSupabase()">☁️ Synchroniser</button>
-    </div>
-    <div id="savedProjectsList" class="saved-projects-list"></div>
-    <div id="cloudStatus" class="cloud-sync-status">☁️ Supabase : en attente</div>
+  <div class="leave-summary">
+   <div class="kpi"><span>Droits acquis</span><b id="leaveTotalRights">0 j</b></div>
+   <div class="kpi"><span>Fractionnement</span><b id="leaveTotalFraction">0 j</b></div>
+   <div class="kpi"><span>Congés pris</span><b id="leaveTotalTaken">0 j</b></div>
+   <div class="kpi"><span>Congés planifiés</span><b id="leaveTotalPlanned">0 j</b></div>
+   <div class="kpi"><span>Solde disponible</span><b id="leaveTotalAvailable">0 j</b></div>
+   <div class="kpi"><span>Solde après planifiés</span><b id="leaveTotalBalance">0 j</b></div>
   </div>
 
-  <div id="status" class="status"></div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Salarié</th>
+      <th>Droits acquis</th>
+      <th>Jours de fractionnement</th>
+      <th>Congés pris</th>
+      <th>Congés planifiés</th>
+      <th>Solde disponible</th>
+      <th>Solde après planifiés</th>
+     </tr>
+    </thead>
+    <tbody id="leaveBody"></tbody>
+   </table>
+  </div>
 
-  <section class="card">
-    <div class="sheet-type-box">
-      <label for="type_fiche">CHOISIR LE TYPE DE FICHE</label>
-      <select id="type_fiche">
-        <option value="preparation">Fiche de préparation chantier</option>
-        <option value="intervention">Fiche d'intervention chantier</option>
-      </select>
-    </div>
-    <h2 id="screenSheetTitle" style="text-align:center;letter-spacing:1px;">FICHE DE PRÉPARATION CHANTIER</h2>
-    <div class="grid">
-      <div><label>Nom du client</label><input id="client"></div>
-      <div><label>Nom du chantier</label><input id="chantier"></div>
-      <div><label>Adresse du chantier</label><input id="adresse"></div>
-      <div><label>Date prévue</label><input id="date" type="date"></div>
-      <div><label>Contact chantier</label><input id="contact_chantier"></div>
-      <div><label>Téléphone du contact chantier</label><input id="telephone_contact" type="tel"></div>
-      <div><label>Chef d'équipe</label><input id="chef"></div>
-      <div><label>Téléphone client</label><input id="telephone" type="tel"></div>
-      <div><label>Horaires d'intervention</label><input id="horaires" placeholder="Ex. 8h00 – 17h00"></div>
-      <div><label>Code portail / Accès chantier</label><input id="acces" placeholder="Code, consignes d'accès..."></div>
-    </div>
-  </section>
+  <div style="margin-top:18px">
+   <h3>Détail des congés saisis</h3>
+   <div class="muted" style="margin-bottom:10px">Les dates futures saisies en type CGE sont classées automatiquement dans « Congés planifiés ».</div>
+   <div class="table-wrap">
+    <table>
+     <thead><tr><th>Date</th><th>Salarié</th><th>Statut</th><th>Commentaire</th></tr></thead>
+     <tbody id="leaveDetailBody"></tbody>
+    </table>
+   </div>
+  </div>
+ </div>
+</section>
 
-  <section class="card">
-    <h2>Gouttières</h2>
-    <div id="gouttieres"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('gouttieres')">+ Ajouter</button></div>
-  </section>
+<section id="reglages" class="view">
+ <div class="grid grid2">
+  <div class="card">
+   <h2>Horaires de référence</h2>
+   <div class="section-title">Journée continue</div><div class="grid grid2"><div class="field"><label>Embauche</label><input id="contStart" type="time"></div><div class="field"><label>Débauche</label><input id="contEnd" type="time"></div></div>
+   <div class="section-title">Journée classique</div><div class="grid grid2"><div class="field"><label>Embauche</label><input id="claStart" type="time"></div><div class="field"><label>Débauche</label><input id="claEnd" type="time"></div></div><div class="grid grid2"><div class="field"><label>Début pause</label><input id="pauseStart" type="time"></div><div class="field"><label>Fin pause</label><input id="pauseEnd" type="time"></div></div>
+   <div class="section-title">Samedi</div><div class="field"><label>Embauche</label><input id="samStart" type="time"></div>
+   <div class="section-title" style="margin-top:18px">Heures supplémentaires</div>
+   <div class="grid grid3">
+    <div class="field"><label>Majoration tranche 1 (%)</label><input id="otRate1" type="number" min="0" step="0.1"></div>
+    <div class="field"><label>Majoration tranche 2 (%)</label><input id="otRate2" type="number" min="0" step="0.1"></div>
+    <div class="field"><label>Limite tranche 1 / semaine (h)</label><input id="otThreshold" type="number" min="0" step="0.25"></div>
+   </div>
+   <div class="note" style="margin-bottom:14px">Réglage repris de ton tableau : première tranche d'heures complémentaires à 10 %, puis tranche suivante à 25 %. Les pourcentages et la limite hebdomadaire restent modifiables ici.</div>
+   <div class="actions"><button class="primary" id="saveSettings">Enregistrer les réglages</button><button class="secondary" id="syncNow">Synchroniser maintenant</button></div>
+  </div>
+  <div class="card"><h2>Salariés et taux horaires</h2><div class="note" style="margin-bottom:12px">Le taux horaire est réglé individuellement pour chaque salarié et sert au calcul du montant des heures complémentaires.</div><div id="employeeSettings"></div><div class="actions"><button class="secondary" id="addEmployee">Ajouter un salarié</button><button class="primary" id="saveEmployees">Enregistrer les salariés</button></div>
+<div class="team-settings" id="teamSettingsPanel">
+ <div class="team-settings-header">
+  <div>
+   <h3 style="margin:0 0 5px">Équipes habituelles</h3>
+   <div class="muted">Crée tes équipes habituelles pour saisir une seule fois les mêmes horaires pour 2, 4 ou 5 salariés.</div>
+  </div>
+  <button type="button" class="team-toggle-btn" id="toggleTeamSettings">Fermer</button>
+ </div>
+ <div id="teamSettingsBody">
+  <div id="teamSettingsList"></div>
+  <div class="actions"><button class="secondary" id="addTeam">Ajouter une équipe</button><button class="primary" id="saveTeams">Enregistrer les équipes</button></div>
+ </div>
+</div></div>
+ </div>
 
-  <section class="card">
-    <h2>Accessoires gouttières</h2>
-    <div id="accessoires_gouttieres"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('accessoires_gouttieres')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Descentes</h2>
-    <div id="descentes"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('descentes')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Accessoires descentes</h2>
-    <div id="accessoires_descentes"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('accessoires_descentes')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Couvertines</h2>
-    <div id="couvertines"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('couvertines')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Accessoires couvertines</h2>
-    <div id="accessoires_couvertines"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('accessoires_couvertines')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Bandeaux</h2>
-    <div id="bandeaux"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('bandeaux')">+ Ajouter</button></div>
-  </section>
-  <section class="card">
-    <h2>Sous-faces</h2>
-    <div id="sous_faces"></div>
-    <div class="actions"><button class="secondary" onclick="addRow('sous_faces')">+ Ajouter</button></div>
-  </section>
-
-  <section class="card">
-    <h2>Remarques générales</h2>
-    <textarea id="remarques" rows="6"></textarea>
-  </section>
+<div class="backup-card">
+  <h3>Sauvegarde complète</h3>
+  <div class="muted">Crée une copie JSON complète de l'application pour pouvoir tout restaurer en cas de problème de synchronisation.</div>
+  <div class="backup-actions">
+    <button type="button" class="secondary" id="exportFullBackup">Exporter sauvegarde JSON</button>
+    <button type="button" class="primary" id="importFullBackup">Restaurer sauvegarde JSON</button>
+    <input type="file" id="importBackupFile" accept=".json,application/json" style="display:none">
+  </div>
+  <div class="backup-note">
+    La sauvegarde contient les salariés, taux horaires, réglages, équipes, journées saisies, reports d'heures et paramètres de l'application.
+  </div>
+</div>
+</section>
 </main>
-
-
-<div id="moveFolderModal" class="move-modal hidden" role="dialog" aria-modal="true">
-  <div class="move-dialog">
-    <h3>Classer / déplacer le chantier</h3>
-    <div id="moveProjectLabel" style="font-weight:700;margin-bottom:10px"></div>
-    <label for="moveFolderSelect">Dossier de destination</label>
-    <select id="moveFolderSelect"><option value="">Sans dossier</option></select>
-    <div class="actions">
-      <button class="secondary" onclick="closeMoveDialog()">Annuler</button>
-      <button class="primary" onclick="confirmMoveProject()">Déplacer</button>
-    </div>
-  </div>
-</div>
-
-<div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-  <div class="preview-toolbar">
-    <button class="primary" onclick="printFromPreview()">📄 Imprimer / Enregistrer en PDF</button>
-    <button class="secondary" onclick="hidePreview()">← Retour à la fiche</button>
-  </div>
-  <div class="preview-scroll">
-    <div id="previewContent" class="preview-sheet" aria-label="Aperçu de la fiche chantier"></div>
-  </div>
-</div>
-
-<div id="printSummary" class="print-summary"></div>
-
+<footer><div class="footer-inner"><span>RML HEURES — V22</span><span id="syncStatus">Connexion Supabase…</span></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const COLORS = ['NEUTRE','BLANC', 'IVOIRE', 'MIEL', 'MARRON', 'ARDOISE', 'ROUGE TUILE', 'BEIGE ROSÉ', 'ROUGE BORDEAUX', 'VERT MOUSSE', 'ROUGE CARMIN', 'JAUNE COLZA', 'BLEU AZUR', 'NOIR', 'GRIS MÉTAL', 'VERT OLIVE', 'OCRE', 'VERT RÉSÉDA', 'BLEU GENTIANE', 'VERT SAPIN', 'CUIVRE FRANÇAIS', 'BRONZE', 'BLEU PIGEON', 'IMITATION ZINC', 'SABLE', 'BEIGE CENDRÉ', 'TITANE', 'NOIR SABLÉ', 'CRÈME', 'GRIS CLAIR', 'BLEU 5008', 'ZINC PATINA', 'GRIS 2900', 'GRIS GALET 7035', 'GRIS 9007'];
-const CATALOG = {'gouttieres': ['GF300', 'GF380', 'GFDR300', 'GFT330', 'GFC300', 'GFC380'], 'accessoires_gouttieres': ['FOND GAUCHE', 'FOND DROIT', 'FOND STANDARD', 'ANGLE INTÉRIEUR', 'ANGLE EXTÉRIEUR', 'NAISSANCE Ø70', 'NAISSANCE Ø80', 'NAISSANCE Ø90', 'NAISSANCE Ø100', 'MANCHON DE NAISSANCE Ø80', 'MANCHON DE NAISSANCE Ø100', 'GRILLE PARE-FEUILLES GRILLAGÉE 300', 'GRILLE PARE-FEUILLES GRILLAGÉE 380', 'GRILLE PARE-FEUILLES PERFORÉE 300', 'GRILLE PARE-FEUILLES PERFORÉE 380'], 'descentes_formes': ['RONDE', 'RECTANGLE'], 'descentes_rondes': ['Ø80', 'Ø100', 'Ø120', 'Ø140', 'Ø160', 'Ø180', 'Ø200'], 'descentes_rectangles': ['60×80', '70×110'], 'accessoires_descentes': ['COUDE RECTANGLE 60×80', 'COUDE RECTANGLE 70×110', 'COUDE ROND Ø80', 'COUDE ROND Ø100', 'COUDE ROND Ø120', 'COUDE ROND Ø140', 'COUDE ROND Ø160', 'COUDE ROND Ø180', 'COUDE ROND Ø200', 'JAMBON Ø80', 'JAMBON Ø100', 'DAUPHIN ALU Ø80', 'DAUPHIN ALU Ø100', 'DAUPHIN FONTE Ø80', 'DAUPHIN FONTE Ø100', 'BOÎTE À EAU STANDARD 20×20×20', 'BOÎTE À EAU SUR MESURE'], 'couvertines': ['340', '360', '380', '400', '420', '440', '460', '480', '500', '520', '540', '560', '580', '600'], 'crochets': ['AVEC PENTE', 'SANS PENTE'], 'accessoires_couvertines': ['ANGLE', 'FOND STANDARD'], 'bandeaux': ['LAMBREQUIN ALUMINIUM TYPE ORNON','BANDEAU ALU 10/10','BANDEAU ALU 15/10'], 'sous_faces': ['ALUMINIUM','PVC']};
+const SUPABASE_URL="https://dbsibzcqhtecknpkkuxa.supabase.co";
+const SUPABASE_KEY="sb_publishable_WE_zFh9O23cF7zEDie4L3w_JUsSb9ao";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const KEY='rml_heures_v1';
+const defaultEmployees=[
+ {name:'FOUCHER BAPTISTE',rate:12.50},{name:'JULIEN',rate:15.00},{name:'XAVIER',rate:16.88},{name:'GOIRE SYLVAIN',rate:14.70},{name:'QUENTIN',rate:15.82},{name:'MAXIME B',rate:13.16},{name:'CHRISTOPHER LARROZE-JARDINE',rate:14.70},{name:'THUBIN ALEXIS',rate:12.02},{name:'MAXIME MONCHAUX',rate:30.13}
+];
+const defaultState={employees:defaultEmployees,settings:{CONT:{start:'07:15',end:'14:15'},CLA:{start:'07:15',end:'15:00',pauseStart:'12:15',pauseEnd:'13:00'},SAM:{start:'07:00',end:'14:00'},overtime:{rate1:10,rate2:25,thresholdHours:4}},entries:[]};
+let state=load();state.settings=normalizeSettings(state.settings);state.settings.overtime=Object.assign({rate1:10,rate2:25,thresholdHours:4},state.settings.overtime||{});let editId=null;
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));return d&&d.entries?d:structuredClone(defaultState)}catch(e){return structuredClone(defaultState)}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
 
-const SCHEMAS = {
-  gouttieres: {
-    headers:["Type","Couleur","Quantité / ML","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.gouttieres},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"text"},
-      {key:"note",type:"text"}
-    ]
-  },
-  accessoires_gouttieres: {
-    headers:["Accessoire","Couleur","Quantité","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.accessoires_gouttieres},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"number"},
-      {key:"note",type:"text"}
-    ]
-  },
-  descentes: {
-    headers:["Forme","Dimension","Couleur","Quantité / ML","Observations"],
-    fields:[
-      {key:"shape",type:"select",options:CATALOG.descentes_formes,onchange:"updateDescentDimension(this)"},
-      {key:"dimension",type:"select",options:[]},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"text"},
-      {key:"note",type:"text"}
-    ]
-  },
-  accessoires_descentes: {
-    headers:["Accessoire","Couleur","Quantité","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.accessoires_descentes},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"number"},
-      {key:"note",type:"text"}
-    ]
-  },
-  couvertines: {
-    headers:["Largeur","Type de crochets","Couleur","Quantité / ML","Observations"],
-    fields:[
-      {key:"width",type:"select",options:CATALOG.couvertines},
-      {key:"hook",type:"select",options:CATALOG.crochets},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"text"},
-      {key:"note",type:"text"}
-    ]
-  },
-  accessoires_couvertines: {
-    headers:["Accessoire","Couleur","Quantité","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.accessoires_couvertines},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"number"},
-      {key:"note",type:"text"}
-    ]
-  },
-  bandeaux: {
-    headers:["Accessoire","Couleur","Quantité","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.bandeaux},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"number"},
-      {key:"note",type:"text"}
-    ]
-  },
-  sous_faces: {
-    headers:["Accessoire","Couleur","Quantité","Observations"],
-    fields:[
-      {key:"type",type:"select",options:CATALOG.sous_faces},
-      {key:"color",type:"select",options:COLORS},
-      {key:"qty",type:"number"},
-      {key:"note",type:"text"}
-    ]
+function normalizeSettings(raw){
+ const base={
+   CONT:{start:'07:15',end:'14:15'},
+   CLA:{start:'07:15',end:'15:00',pauseStart:'12:15',pauseEnd:'13:00'},
+   SAM:{start:'07:00',end:'14:00'},
+   overtime:{rate1:10,rate2:25,thresholdHours:4},
+   teams:[],
+   monthlyReports:{},
+   paidLeaveRights:{},
+   paidLeaveFractionnement:{}
+ };
+ const s=(raw&&typeof raw==='object')?raw:{};
+ return {
+   ...base,
+   ...s,
+   CONT:{...base.CONT,...(s.CONT||{})},
+   CLA:{...base.CLA,...(s.CLA||{})},
+   SAM:{...base.SAM,...(s.SAM||{})},
+   overtime:{...base.overtime,...(s.overtime||{})},
+   teams:Array.isArray(s.teams)?s.teams:[],
+   monthlyReports:(s.monthlyReports&&typeof s.monthlyReports==='object')?s.monthlyReports:{},
+   paidLeaveRights:(s.paidLeaveRights&&typeof s.paidLeaveRights==='object')?s.paidLeaveRights:{},
+   paidLeaveFractionnement:(s.paidLeaveFractionnement&&typeof s.paidLeaveFractionnement==='object')?s.paidLeaveFractionnement:{}
+ };
+}
+
+function setSyncStatus(msg,ok=true,detail=''){
+ const x=el('syncStatus');
+ if(x){x.textContent=msg;x.style.color=ok?'#166534':'#991b1b';x.title=detail||''}
+}
+function hmFromMinutes(m){m=Math.max(0,Number(m)||0);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.round(m%60)).padStart(2,'0')}
+function entryToRow(e){return {entry_date:e.date,employee_name:e.employee,day_type:e.type||null,shifted_start:e.startOverride||null,chantier_depart:e.depart||null,depot_arrival:e.arrivee||null,deduction_minutes:mins(e.deduction)||0,comment:e.comment||null,overtime_minutes:e.sup||0,road_minutes:e.route||0,real_overtime_minutes:e.real||0,updated_at:new Date().toISOString()}}
+function rowToEntry(r){return {id:String(r.id||`${r.employee_name}|${r.entry_date}`),employee:r.employee_name,date:r.entry_date,type:r.day_type||'CONT',startOverride:r.shifted_start||'',depart:r.chantier_depart||'',arrivee:r.depot_arrival||'',deduction:hmFromMinutes(r.deduction_minutes||0),comment:r.comment||'',sup:Number(r.overtime_minutes)||0,route:Number(r.road_minutes)||0,real:Number(r.real_overtime_minutes)||0,presence:0,week:dayKind(r.entry_date)}}
+async function pushEmployees(){const {error:delErr}=await db.from('rml_heures_employees').delete().gte('id',0);if(delErr)throw delErr;if(state.employees.length){const rows=state.employees.map(e=>({name:e.name,hourly_rate:Number(e.rate)||0,active:true,updated_at:new Date().toISOString()}));const {error}=await db.from('rml_heures_employees').insert(rows);if(error)throw error}}
+async function pushSettings(){
+ state.settings=normalizeSettings(state.settings);
+ const {error}=await db.from('rml_heures_settings').upsert({
+   setting_key:'app_settings',
+   setting_value:JSON.stringify(state.settings),
+   updated_at:new Date().toISOString()
+ },{onConflict:'setting_key'});
+ if(error)throw error
+}
+async function pushEntry(e){const {error}=await db.from('rml_heures_entries').upsert(entryToRow(e),{onConflict:'entry_date,employee_name'});if(error)throw error}
+async function pushAllEntries(){if(!state.entries.length)return;const {error}=await db.from('rml_heures_entries').upsert(state.entries.map(entryToRow),{onConflict:'entry_date,employee_name'});if(error)throw error}
+async function syncFromCloud(){if(!navigator.onLine){setSyncStatus('Hors ligne — sauvegarde locale',false);return false}setSyncStatus('Synchronisation…');try{const [er,sr,tr]=await Promise.all([db.from('rml_heures_employees').select('*').order('id'),db.from('rml_heures_settings').select('*').eq('setting_key','app_settings').maybeSingle(),db.from('rml_heures_entries').select('*').order('entry_date')]);if(er.error)throw er.error;if(sr.error)throw sr.error;if(tr.error)throw tr.error;if(er.data&&er.data.length){state.employees=er.data.filter(x=>x.active!==false).map(x=>({name:x.name,rate:Number(x.hourly_rate)||0}))}else{await pushEmployees()}if(sr.data?.setting_value){
+  try{
+    state.settings=normalizeSettings(JSON.parse(sr.data.setting_value));
+    // Réécrit automatiquement le format actuel dans Supabase :
+    // cela migre les anciens réglages et ajoute teams/overtime manquants.
+    await pushSettings();
+  }catch(e){
+    console.warn('Réglages Supabase invalides, utilisation des valeurs sûres',e);
+    state.settings=normalizeSettings(state.settings);
+    await pushSettings();
   }
-};
+}else{
+  state.settings=normalizeSettings(state.settings);
+  await pushSettings();
+}if(tr.data&&tr.data.length){state.entries=tr.data.map(rowToEntry)}else if(state.entries.length){await pushAllEntries()}persist();options();ensureEmployeePlaceholder();renderSettings();updateCalc();renderMonth();renderRecap();renderPaidLeave();setSyncStatus('Supabase synchronisé ✓');return true}catch(err){
+ console.error('Erreur synchronisation Supabase :',err);
+ setSyncStatus('Erreur synchro — données locales conservées',false,err?.message||String(err));
+ return false
+}}
+function mins(t){if(!t)return null;const [h,m]=t.split(':').map(Number);return h*60+m}
+function time(m){if(m==null||isNaN(m))return '—';m=Math.max(0,Math.round(m));return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0')}
+function clock(m){if(m==null)return '—';m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function dayKind(date){if(!date)return 'SE';const d=new Date(date+'T12:00:00').getDay();return(d===0||d===6)?'WE':'SE'}
+function calc(){
+ const type=el('type').value,date=el('date').value,s=state.settings[type]||state.settings.CONT;
+ const absence=['ABS','MAL','AT','CGE'].includes(type);
+ const formation=type==='FORM';
 
-function optionHtml(options, selected="") {
-  return '<option value="">Choisir</option>' + options.map(v =>
-    `<option value="${v}" ${v===selected?'selected':''}>${v}</option>`
-  ).join('');
+ el('timeFields').style.display=(absence||formation)?'none':'block';
+ el('absenceRange')?.classList.toggle('active',['CGE','MAL','AT'].includes(type));
+ if(!['CGE','MAL','AT'].includes(type)&&el('absenceEnd'))el('absenceEnd').value='';
+
+ if(absence){
+   return {sup:0,route:0,real:0,presence:0,start:null,normalEnd:null,ded:0,week:dayKind(date),shifted:false}
+ }
+
+ const referenceStart=mins((formation?state.settings.CONT:s).start);
+ const referenceEnd=mins((formation?state.settings.CONT:s).end||(formation?state.settings.CONT:s).start);
+
+ if(formation){
+   return {
+     sup:0,route:0,real:0,
+     presence:Math.max(0,referenceEnd-referenceStart),
+     start:referenceStart,normalEnd:referenceEnd,ded:0,
+     week:dayKind(date),shifted:false,
+     referenceDuration:Math.max(0,referenceEnd-referenceStart)
+   }
+ }
+
+ const override=mins(el('startOverride').value);
+ const shifted=override!=null;
+ const start=shifted?override:referenceStart;
+ const referenceDuration=Math.max(0,referenceEnd-referenceStart);
+ const normalEnd=shifted ? start+referenceDuration : referenceEnd;
+
+ const depart=mins(el('depart').value);
+ const arrivee=mins(el('arrivee').value);
+ const ded=mins(el('deduction').value)||0;
+
+ let sup=0,route=0,presence=0;
+ if(type==='SAM'){
+   if(depart!=null) sup=Math.max(0,depart-start);
+   if(arrivee!=null&&depart!=null) route=Math.max(0,arrivee-depart);
+ }else{
+   if(depart!=null) sup=Math.max(0,depart-normalEnd);
+   if(arrivee!=null){
+     const routeStart=Math.max(depart==null?normalEnd:depart,normalEnd);
+     route=Math.max(0,arrivee-routeStart);
+   }
+ }
+ if(arrivee!=null) presence=Math.max(0,arrivee-start);
+ const real=Math.max(0,sup-ded);
+
+ return {sup,route,real,presence,start,normalEnd,ded,week:dayKind(date),shifted,referenceDuration}
+}
+function updateCalc(){
+ const c=calc(),type=el('type').value;
+ const absence=['ABS','MAL','AT','CGE'].includes(type);
+ el('normalRange').textContent=absence?'—':(clock(c.start).replace(':','h')+'–'+clock(c.normalEnd).replace(':','h'));
+ el('sup').textContent=time(c.sup);
+ el('route').textContent=time(c.route);
+ el('real').textContent=time(c.real);
+ el('startKept').textContent=c.start==null?'—':clock(c.start);
+ el('endNormal').textContent=c.normalEnd==null?'—':clock(c.normalEnd);
+ el('presence').textContent=time(c.presence);
+ el('weekType').textContent=c.week;
+ el('calcTitle').textContent=el('employee').value||'Résultat';
+}
+function el(id){return document.getElementById(id)}
+function options(){const opts=state.employees.map(e=>`<option>${esc(e.name)}</option>`).join('');el('employee').innerHTML=opts;el('monthEmployee').innerHTML=opts}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function setToday(){const d=new Date();el('date').value=d.toISOString().slice(0,10);const ym=d.toISOString().slice(0,7);el('monthPick').value=ym;el('recapMonth').value=ym}
+function workingDatesBetween(startDate,endDate){
+ if(!startDate)return [];
+ const end=endDate||startDate;
+ const a=new Date(startDate+'T12:00:00'),b=new Date(end+'T12:00:00');
+ if(b<a)return null;
+ const dates=[];
+ for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1)){
+   const day=d.getDay();
+   if(day!==0&&day!==6)dates.push(d.toISOString().slice(0,10));
+ }
+ return dates;
+}
+async function saveEntry(){
+ const c=calc(),type=el('type').value,date=el('date').value;
+ const teamMode=el('teamModeBtn')?.classList.contains('active');
+ const employees=teamMode
+   ? Array.from(document.querySelectorAll('.teamMemberCheck:checked')).map(x=>x.value)
+   : [el('employee').value];
+
+ if(!date)return alert('Choisis la date.');
+ if(!employees.length||!employees[0])return alert(teamMode?'Sélectionne au moins un salarié dans l’équipe.':'Choisis le salarié.');
+
+ let dates=[date];
+ if(['CGE','MAL','AT'].includes(type)&&el('absenceEnd')?.value){
+   dates=workingDatesBetween(date,el('absenceEnd').value);
+   if(dates===null)return alert('La date de fin doit être postérieure ou égale à la date de début.');
+   if(!dates.length)return alert('La période choisie ne contient aucun jour ouvré.');
+ }
+
+ const formation=type==='FORM';
+ const absence=['ABS','MAL','AT','CGE'].includes(type);
+ const saved=[];
+
+ for(const entryDate of dates){
+   const dayCalc=(entryDate===date)?c:{
+     sup:0,route:0,real:0,
+     presence:formation?Math.max(0,mins(state.settings.CONT.end)-mins(state.settings.CONT.start)):0,
+     week:dayKind(entryDate)
+   };
+
+   const base={
+     date:entryDate,
+     type,
+     startOverride:(formation||absence)?'':el('startOverride').value,
+     depart:(formation||absence)?'':el('depart').value,
+     arrivee:(formation||absence)?'':el('arrivee').value,
+     deduction:(formation||absence)?'00:00':(el('deduction').value||'00:00'),
+     comment:el('comment').value,
+     sup:dayCalc.sup||0,
+     route:dayCalc.route||0,
+     real:dayCalc.real||0,
+     presence:dayCalc.presence||0,
+     week:dayCalc.week||dayKind(entryDate)
+   };
+
+   for(const employee of employees){
+     const entry={id:(dates.length===1&&!teamMode&&editId)||crypto.randomUUID(),employee,...base};
+     const duplicate=state.entries.findIndex(x=>x.employee===employee&&x.date===entryDate);
+     const i=state.entries.findIndex(x=>x.id===entry.id);
+     if(i>=0)state.entries[i]=entry;
+     else if(duplicate>=0){entry.id=state.entries[duplicate].id;state.entries[duplicate]=entry}
+     else state.entries.push(entry);
+     saved.push(entry);
+   }
+ }
+
+ persist();clearForm();renderMonth();renderRecap();renderPaidLeave();
+ try{
+   await Promise.all(saved.map(pushEntry));
+   setSyncStatus('Supabase synchronisé ✓');
+   if(['CGE','MAL','AT'].includes(type)&&dates.length>1){
+     const labels={CGE:'congés',MAL:'maladie',AT:'accident du travail'};
+     alert(`${dates.length} jours de ${labels[type]} enregistrés pour ${employees.length} salarié${employees.length>1?'s':''}.`);
+   }else{
+     alert(teamMode?`Journée enregistrée pour ${saved.length} salarié${saved.length>1?'s':''}.`:'Journée enregistrée et synchronisée.');
+   }
+ }catch(err){
+   console.error(err);setSyncStatus('Enregistré localement — synchro en attente',false);
+   alert('Journée enregistrée sur cet appareil. La synchronisation Supabase reprendra dès que possible.');
+ }
+}
+function clearForm(){
+ const keepDate=el('date')?.value||'';
+
+ editId=null;
+
+ if(el('employee'))el('employee').value='';
+ if(el('type'))el('type').value='CONT';
+ if(el('startOverride'))el('startOverride').value='';
+ if(el('depart'))el('depart').value='';
+ if(el('arrivee'))el('arrivee').value='';
+ if(el('deduction'))el('deduction').value='00:00';
+ if(el('comment'))el('comment').value='';
+ if(el('absenceEnd'))el('absenceEnd').value='';
+ if(el('leaveEnd'))el('leaveEnd').value='';
+
+ // Désélection des équipes / retour au mode salarié seul
+ document.querySelectorAll('.teamMemberCheck').forEach(cb=>cb.checked=false);
+ if(el('teamPreset'))el('teamPreset').value='';
+ if(typeof teamMode==='function')teamMode(false);
+
+ // Conserver uniquement la date
+ if(el('date'))el('date').value=keepDate;
+
+ updateCalc();
+ if(typeof updateTeamSummary==='function')updateTeamSummary();
+}
+function editEntry(id){const e=state.entries.find(x=>x.id===id);if(!e)return;editId=id;['employee','date','type','startOverride','depart','arrivee','deduction','comment'].forEach(k=>{if(el(k))el(k).value=e[k]||''});el('saveBtn').textContent='Enregistrer les modifications';show('saisie');updateCalc();window.scrollTo({top:0,behavior:'smooth'})}
+async function delEntry(id){if(!confirm('Supprimer cette journée ?'))return;const e=state.entries.find(x=>x.id===id);state.entries=state.entries.filter(x=>x.id!==id);persist();renderMonth();renderRecap();renderPaidLeave();if(e&&navigator.onLine){const {error}=await db.from('rml_heures_entries').delete().eq('entry_date',e.date).eq('employee_name',e.employee);if(error){console.error(error);setSyncStatus('Suppression locale — synchro à vérifier',false)}else setSyncStatus('Supabase synchronisé ✓')}}
+function panierForEntry(e){return ['CONT','CLA','SAM','FORM'].includes(e?.type)?1:0}
+
+
+function incomingReportRows(employee,ym){
+ const prevYm=previousMonth(ym);
+ const rec=reportRecord(prevYm,employee);
+ const cutoff=rec?.cutoffDate||'';
+ if(!cutoff||!validCutoffForMonth(cutoff,prevYm))return [];
+ return state.entries
+  .filter(e=>e.employee===employee&&e.date&&e.date.startsWith(prevYm)&&e.date>=cutoff&&netRealForEntry(e)>0)
+  .sort((a,b)=>a.date.localeCompare(b.date))
+  .map(e=>({...e,real:netRealForEntry(e),sup:netRealForEntry(e),_reportSource:true}));
+}
+function carryOut(employee,ym){
+ const rec=reportRecord(ym,employee);
+ const cutoff=rec?.cutoffDate||'';
+ if(!cutoff||!validCutoffForMonth(cutoff,ym))return 0;
+ return acquiredMinutesFrom(employee,ym,cutoff);
+}
+function entryReportedMinutes(e,ym,employee){
+ const rec=reportRecord(ym,employee);
+ const cutoff=rec?.cutoffDate||'';
+ if(!cutoff||!validCutoffForMonth(cutoff,ym))return 0;
+ return e.date>=cutoff?(Number(e.real)||0):0
+}
+function overtimeAmounts(rows,rate){
+ const cfg=state.settings.overtime||{rate1:10,rate2:25,thresholdHours:4};
+ const sp=splitOvertime(rows);
+ const amount10=(sp.m1/60)*(Number(rate)||0)*(1+Number(cfg.rate1||0)/100);
+ const amount25=(sp.m2/60)*(Number(rate)||0)*(1+Number(cfg.rate2||0)/100);
+ return {sp,amount10,amount25,total:amount10+amount25}
 }
 
-function inputHtml(field, value="") {
-  if(field.type==="select") {
-    return `<select data-key="${field.key}" ${field.onchange?`onchange="${field.onchange}"`:''}>${optionHtml(field.options,value)}</select>`;
+function renderMonth(){
+ const emp=el('monthEmployee').value,ym=el('monthPick').value;
+ const rows=state.entries.filter(e=>e.employee===emp&&e.date.startsWith(ym)).sort((a,b)=>a.date.localeCompare(b.date));
+ const ledger=recoveryLedger(emp);
+ const incomingRows=incomingReportRows(emp,ym);
+ const opening=incomingRows.reduce((a,e)=>a+(Number(e.real)||0),0);
+ let totals={sup:0,route:0,real:0,ded:0,paniers:0};
+ rows.forEach(e=>{totals.sup+=e.sup||0;totals.route+=e.route||0;totals.real+=ledger[e.id]?.netReal ?? (e.real||0);totals.ded+=mins(e.deduction)||0;totals.paniers+=panierForEntry(e)});
+ const employee=state.employees.find(x=>x.name===emp);
+ const rate=Number(employee?.rate)||0;
+ const rec=reportRecord(ym,emp);
+ const cutoff=(rec?.cutoffDate&&validCutoffForMonth(rec.cutoffDate,ym))?rec.cutoffDate:'';
+ const currentPayableRows=(cutoff?rows.filter(e=>e.date<cutoff):rows).map(e=>({...e,real:ledger[e.id]?.netReal ?? (e.real||0),sup:ledger[e.id]?.netReal ?? (e.sup||0)}));
+ const currentReportedRows=(cutoff?rows.filter(e=>e.date>=cutoff):[]).map(e=>({...e,real:ledger[e.id]?.netReal ?? (e.real||0),sup:ledger[e.id]?.netReal ?? (e.sup||0)}));
+ const currentPayable=currentPayableRows.reduce((a,e)=>a+(Number(e.real)||0),0);
+ const outgoing=currentReportedRows.reduce((a,e)=>a+(Number(e.real)||0),0);
+ const payableRows=[...incomingRows,...currentPayableRows];
+ const amounts=overtimeAmounts(payableRows,rate);
+ const cfg=state.settings.overtime||{rate1:10,rate2:25,thresholdHours:4};
+
+ el('monthKpis').innerHTML=`
+  <div class="kpi"><span>Report de ${monthLabelFr(previousMonth(ym))}</span><b>${time(opening)}</b></div>
+  <div class="kpi real"><span>H sup réelles de ${monthLabelFr(ym)}</span><b>${time(totals.real)}</b></div>
+  <div class="kpi"><span>H du mois payées maintenant</span><b>${time(currentPayable)}</b></div>
+  <div class="kpi"><span>Total heures payées ce mois</span><b>${time(opening+currentPayable)}</b></div>
+  <div class="kpi"><span>Report vers ${monthLabelFr(nextMonth(ym))}</span><b>${time(outgoing)}</b></div>
+  <div class="kpi"><span>HC ${cfg.rate1}% payées</span><b>${time(amounts.sp.m1)}</b><small>${money(amounts.amount10)}</small></div>
+  <div class="kpi"><span>HC ${cfg.rate2}% payées</span><b>${time(amounts.sp.m2)}</b><small>${money(amounts.amount25)}</small></div>
+  <div class="kpi"><span>Paniers du mois</span><b>${totals.paniers}</b></div>`;
+
+ let reportRow='';
+ if(opening>0){
+  const prevRec=reportRecord(previousMonth(ym),emp);
+  const prevCutoff=prevRec?.cutoffDate||'';
+  reportRow=`<tr class="report-row">
+   <td>${prevCutoff?new Date(prevCutoff+'T12:00').toLocaleDateString('fr-FR'):'—'}</td>
+   <td><strong>REPORT</strong></td>
+   <td colspan="6"><strong>Heures reportées de ${monthLabelFr(previousMonth(ym))}</strong>${prevCutoff?`<div class="report-month-note">à partir du ${new Date(prevCutoff+'T12:00').toLocaleDateString('fr-FR')} — payées en ${monthLabelFr(ym)}</div>`:''}</td>
+   <td><strong>${time(opening)}</strong></td>
+   <td>—</td><td>—</td><td>Payées ce mois</td><td></td>
+  </tr>`;
+ }
+ const normalRows=rows.map(e=>{
+  const reportMin=(cutoff&&e.date>=cutoff)?(Number(e.real)||0):0;
+  return `<tr>
+   <td>${new Date(e.date+'T12:00').toLocaleDateString('fr-FR')}</td>
+   <td><span class="badge ${e.type}">${e.type}</span></td>
+   <td>${e.startOverride||state.settings[e.type]?.start||'—'}</td>
+   <td>${e.depart||'—'}</td><td>${e.arrivee||'—'}</td>
+   <td>${time(e.sup)}</td><td>${time(e.route)}</td><td>${e.deduction||'00:00'}</td>
+   <td><b>${time(ledger[e.id]?.netReal ?? e.real)}</b>${(ledger[e.id]?.recovered||0)>0?`<div class="muted" style="font-size:11px">${time(ledger[e.id].recovered)} récupérée</div>`:''}</td>
+   <td class="${reportMin>0?'reported-hours':'not-reported'}">${reportMin>0?time(reportMin):'—'}</td>
+   <td><span class="panier-pill">${panierForEntry(e)}</span></td>
+   <td>${esc(e.comment)}</td>
+   <td class="row-actions"><button onclick="editEntry('${e.id}')">✎</button> <button onclick="delEntry('${e.id}')">×</button></td>
+  </tr>`
+ }).join('');
+ el('monthBody').innerHTML=(reportRow+normalRows)||`<tr><td colspan="13" class="empty">Aucune journée enregistrée pour ce mois.</td></tr>`;
+}
+function weekKey(date){const d=new Date(date+'T12:00:00');const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+3);const first=new Date(d.getFullYear(),0,4);const firstDay=(first.getDay()+6)%7;first.setDate(first.getDate()-firstDay+3);const week=1+Math.round((d-first)/604800000);return d.getFullYear()+'-W'+String(week).padStart(2,'0')}
+function splitOvertime(rows){const cfg=state.settings.overtime||{rate1:10,rate2:25,thresholdHours:4};const limit=(Number(cfg.thresholdHours)||0)*60;const byWeek={};rows.forEach(e=>{const k=weekKey(e.date);(byWeek[k]||(byWeek[k]=[])).push(e)});let m1=0,m2=0;Object.values(byWeek).forEach(list=>{const total=list.reduce((a,e)=>a+(e.real||0),0);m1+=Math.min(total,limit);m2+=Math.max(0,total-limit)});return {m1,m2}}
+function money(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+
+function monthLabelFr(ym){
+ if(!ym)return '';
+ const [y,m]=ym.split('-').map(Number);
+ return new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(new Date(y,m-1,1));
+}
+function nextMonth(ym){
+ if(!ym)return '';
+ const [y,m]=ym.split('-').map(Number);
+ const d=new Date(y,m,1);
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')
+}
+function previousMonth(ym){
+ if(!ym)return '';
+ const [y,m]=ym.split('-').map(Number);
+ const d=new Date(y,m-2,1);
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')
+}
+function isRealWorkDay(e){
+ return !!e && ['CONT','CLA','SAM'].includes(e.type)
+}
+function earlyLeaveDebit(e){
+ if(!e||!e.date||!isRealWorkDay(e))return 0;
+ const s=state.settings[e.type]||state.settings.CONT;
+ const refStart=mins(s.start),refEnd=mins(s.end||s.start);
+ const override=mins(e.startOverride);
+ const start=override!=null?override:refStart;
+ const normalEnd=override!=null?start+Math.max(0,refEnd-refStart):refEnd;
+ const depart=mins(e.depart);
+ if(depart==null||normalEnd==null)return 0;
+ return Math.max(0,normalEnd-depart)
+}
+function recoveryLedger(employee){
+ const rows=state.entries.filter(e=>e.employee===employee&&e.date).slice().sort((a,b)=>a.date.localeCompare(b.date));
+ let balance=0;const byId={};
+ for(const e of rows){
+  const debit=earlyLeaveDebit(e);
+  balance+=debit;
+  const gross=isRealWorkDay(e)?Math.max(0,Number(e.real)||0):0;
+  const recovered=Math.min(balance,gross);
+  const net=isRealWorkDay(e)?Math.max(0,gross-recovered):Math.max(0,Number(e.real)||0);
+  balance=Math.max(0,balance-recovered);
+  byId[e.id]={debit,grossReal:gross,recovered,netReal:net,balanceAfter:balance};
+ }
+ return byId
+}
+function netRealForEntry(e){
+ const x=recoveryLedger(e.employee)[e.id];
+ return x?x.netReal:Math.max(0,Number(e.real)||0)
+}
+function recoveryBalanceAtEnd(employee,ym){
+ const rows=state.entries.filter(e=>e.employee===employee&&e.date&&e.date<=ym+'-31').slice().sort((a,b)=>a.date.localeCompare(b.date));
+ let balance=0;
+ for(const e of rows){
+  balance+=earlyLeaveDebit(e);
+  const gross=isRealWorkDay(e)?Math.max(0,Number(e.real)||0):0;
+  balance=Math.max(0,balance-Math.min(balance,gross));
+ }
+ return balance
+}
+function acquiredMinutes(employee,ym){
+ const ledger=recoveryLedger(employee);
+ return state.entries
+  .filter(e=>e.employee===employee&&e.date&&e.date.startsWith(ym))
+  .reduce((a,e)=>a+(ledger[e.id]?.netReal ?? (Number(e.real)||0)),0)
+}
+function acquiredMinutesBefore(employee,ym,cutoff){
+ if(!cutoff)return acquiredMinutes(employee,ym);
+ return state.entries.filter(e=>e.employee===employee&&e.date&&e.date.startsWith(ym)&&e.date<cutoff).reduce((a,e)=>a+(Number(e.real)||0),0)
+}
+function acquiredMinutesFrom(employee,ym,cutoff){
+ if(!cutoff)return 0;
+ return state.entries.filter(e=>e.employee===employee&&e.date&&e.date.startsWith(ym)&&e.date>=cutoff).reduce((a,e)=>a+(Number(e.real)||0),0)
+}
+function validCutoffForMonth(cutoff,ym){return !!(cutoff&&ym&&cutoff.startsWith(ym))}
+function reportRecord(ym,employee){
+ state.settings.monthlyReports=state.settings.monthlyReports||{};
+ const month=state.settings.monthlyReports[ym]||{};
+ return month[employee]||null
+}
+function carryInto(employee,ym){
+ if(!ym)return 0;
+ const prev=previousMonth(ym);
+ if(!prev)return 0;
+ const rec=reportRecord(prev,employee);
+ const cutoff=rec?.cutoffDate||'';
+ if(!cutoff||!validCutoffForMonth(cutoff,prev))return 0;
+ return acquiredMinutesFrom(employee,prev,cutoff);
+}
+function parseHoursInput(v){
+ if(v==null||v==='')return 0;
+ const s=String(v).trim().replace(',', '.');
+ if(/^\d+:\d{1,2}$/.test(s)){
+   const [h,m]=s.split(':').map(Number);
+   return Math.max(0,h*60+Math.min(59,m||0))
+ }
+ if(/^\d+h\d{0,2}$/i.test(s)){
+   const [h,m='0']=s.toLowerCase().split('h').map(Number);
+   return Math.max(0,h*60+Math.min(59,m||0))
+ }
+ const n=Number(s);
+ return Number.isFinite(n)?Math.max(0,Math.round(n*60)):0
+}
+function hoursInputValue(minutes){
+ minutes=Math.max(0,Math.round(Number(minutes)||0));
+ return Math.floor(minutes/60)+':'+String(minutes%60).padStart(2,'0')
+}
+function renderReports(){
+ const ym=el('recapMonth')?.value;
+ if(!el('reportBody')||!ym)return;
+
+ const prevYm=previousMonth(ym),nextYm=nextMonth(ym);
+ if(el('reportPrevHead'))el('reportPrevHead').textContent='Heures reportées de '+monthLabelFr(prevYm);
+ if(el('reportCurrentHead'))el('reportCurrentHead').textContent='H sup de '+monthLabelFr(ym);
+ if(el('reportNextHead'))el('reportNextHead').textContent='Heures à reporter';
+
+ el('reportBody').innerHTML=state.employees.map(emp=>{
+   const incoming=carryInto(emp.name,ym);
+   const earned=acquiredMinutes(emp.name,ym);
+   const rec=reportRecord(ym,emp.name);
+
+   let cutoff=rec?.cutoffDate||'';
+   if(!validCutoffForMonth(cutoff,ym))cutoff='';
+   const displayDate=rec?.displayDate||cutoff||'';
+
+   // Logique métier :
+   // le report du mois précédent est payé sur le mois affiché.
+   // Il apparaît dans "H à partir de la date".
+   const hoursBefore=0;
+   const hoursFromDate=incoming;
+
+   // Les heures du mois affiché situées à partir de sa propre date de coupure
+   // constituent, elles, le nouveau report vers le mois suivant.
+   const outgoing=cutoff?acquiredMinutesFrom(emp.name,ym,cutoff):0;
+   const currentPaid=Math.max(0,earned-outgoing);
+   const payable=incoming+currentPaid;
+
+   return `<tr>
+    <td><b>${esc(emp.name)}</b></td>
+    <td>${time(incoming)}${incoming>0?`<div class="muted" style="font-size:11px">payé en ${monthLabelFr(ym)}</div>`:''}</td>
+    <td>${time(earned)}</td>
+    <td><input type="date" class="report-date-input" data-report-cutoff="${esc(emp.name)}" value="${displayDate}"></td>
+    <td>${time(hoursBefore)}</td>
+    <td><b>${time(hoursFromDate)}</b></td>
+    <td><b>${time(payable)}</b></td>
+    <td class="${outgoing>0?'report-positive':'report-zero'}" data-report-carry="${esc(emp.name)}">
+      ${time(outgoing)}
+      ${outgoing>0?`<div class="muted" style="font-size:11px">vers ${monthLabelFr(nextYm)}</div>`:''}
+    </td>
+   </tr>`
+ }).join('');
+
+ refreshGlobalReportDate();
+
+ document.querySelectorAll('[data-report-cutoff]').forEach(inp=>{
+   inp.addEventListener('change',()=>{
+     const emp=inp.dataset.reportCutoff;
+     const chosen=inp.value;
+     const cutoff=validCutoffForMonth(chosen,ym)?chosen:'';
+
+     state.settings.monthlyReports=state.settings.monthlyReports||{};
+     state.settings.monthlyReports[ym]=state.settings.monthlyReports[ym]||{};
+     state.settings.monthlyReports[ym][emp]={
+       ...(state.settings.monthlyReports[ym][emp]||{}),
+       displayDate:chosen,
+       cutoffDate:cutoff,
+       updatedAt:new Date().toISOString()
+     };
+     persist();
+
+     const incoming=carryInto(emp,ym);
+     const earned=acquiredMinutes(emp,ym);
+     const outgoing=cutoff?acquiredMinutesFrom(emp,ym,cutoff):0;
+     const payable=incoming+Math.max(0,earned-outgoing);
+     const row=inp.closest('tr');
+     if(row){
+       row.children[4].textContent=time(0);
+       row.children[5].innerHTML='<b>'+time(incoming)+'</b>';
+       row.children[6].innerHTML='<b>'+time(payable)+'</b>';
+       row.children[7].className=outgoing>0?'report-positive':'report-zero';
+       row.children[7].innerHTML=time(outgoing)+(outgoing>0?`<div class="muted" style="font-size:11px">vers ${monthLabelFr(nextYm)}</div>`:'');
+     }
+   })
+ });
+}
+function refreshGlobalReportDate(){
+ const ym=el('recapMonth')?.value;
+ const input=el('globalReportDate');
+ if(!input||!ym)return;
+
+ const commonDisplay=()=>{
+   const vals=state.employees.map(emp=>reportRecord(ym,emp.name)?.displayDate||'');
+   return vals.length===state.employees.length && vals.every(Boolean) && new Set(vals).size===1 ? vals[0] : '';
+ };
+
+ const commonCutoff=(targetYm)=>{
+   const vals=state.employees.map(emp=>{
+     const d=reportRecord(targetYm,emp.name)?.cutoffDate||'';
+     return validCutoffForMonth(d,targetYm)?d:'';
+   });
+   return vals.length===state.employees.length && vals.every(Boolean) && new Set(vals).size===1 ? vals[0] : '';
+ };
+
+ input.value=commonDisplay()||commonCutoff(ym)||commonCutoff(previousMonth(ym))||'';
+}
+
+async function applyGlobalReportDate(){
+ const displayedYm=el('recapMonth')?.value;
+ const date=el('globalReportDate')?.value||'';
+ if(!displayedYm)return alert('Choisis le mois.');
+ if(!date)return alert('Choisis une date de report.');
+
+ const targetYm=date.slice(0,7);
+
+ state.settings.monthlyReports=state.settings.monthlyReports||{};
+ state.settings.monthlyReports[targetYm]=state.settings.monthlyReports[targetYm]||{};
+ state.settings.monthlyReports[displayedYm]=state.settings.monthlyReports[displayedYm]||{};
+
+ state.employees.forEach(emp=>{
+   // Coupure réelle rattachée au mois de la date.
+   state.settings.monthlyReports[targetYm][emp.name]={
+     ...(state.settings.monthlyReports[targetYm][emp.name]||{}),
+     cutoffDate:date,
+     updatedAt:new Date().toISOString()
+   };
+
+   // Date affichée mémorisée dans le mois actuellement consulté.
+   state.settings.monthlyReports[displayedYm][emp.name]={
+     ...(state.settings.monthlyReports[displayedYm][emp.name]||{}),
+     displayDate:date,
+     cutoffDate:targetYm===displayedYm ? date : '',
+     updatedAt:new Date().toISOString()
+   };
+ });
+
+ persist();
+
+ renderRecap();
+ renderMonth();
+
+ // Après le rendu, les champs restent sur la date choisie.
+ document.querySelectorAll('[data-report-cutoff]').forEach(inp=>{
+   inp.value=date;
+ });
+
+ if(el('globalReportDate'))el('globalReportDate').value=date;
+
+ try{
+   await pushSettings();
+   setSyncStatus('Supabase synchronisé ✓');
+   alert('Date de report appliquée à tous et mémorisée.');
+ }catch(err){
+   console.error(err);
+   setSyncStatus('Date enregistrée localement — synchro en attente',false);
+   alert('Date appliquée localement. La synchronisation reprendra dès que possible.');
+ }
+}
+
+async function clearGlobalReportDate(){
+ const displayedYm=el('recapMonth')?.value;
+ if(!displayedYm)return;
+
+ state.settings.monthlyReports=state.settings.monthlyReports||{};
+ state.settings.monthlyReports[displayedYm]=state.settings.monthlyReports[displayedYm]||{};
+
+ state.employees.forEach(emp=>{
+   state.settings.monthlyReports[displayedYm][emp.name]={
+     ...(state.settings.monthlyReports[displayedYm][emp.name]||{}),
+     displayDate:'',
+     cutoffDate:'',
+     updatedAt:new Date().toISOString()
+   };
+ });
+
+ if(el('globalReportDate'))el('globalReportDate').value='';
+
+ persist();
+ renderRecap();
+ renderMonth();
+
+ try{await pushSettings();setSyncStatus('Supabase synchronisé ✓')}
+ catch(err){console.error(err);setSyncStatus('Modification locale — synchro en attente',false)}
+}
+
+async function saveReports(){
+ const ym=el('recapMonth')?.value;
+ if(!ym)return alert('Choisis le mois.');
+
+ state.settings.monthlyReports=state.settings.monthlyReports||{};
+ state.settings.monthlyReports[ym]=state.settings.monthlyReports[ym]||{};
+
+ for(const emp of state.employees){
+   const input=document.querySelector(`[data-report-cutoff="${CSS.escape(emp.name)}"]`);
+   const chosen=input?.value||'';
+   const targetYm=chosen?chosen.slice(0,7):ym;
+
+   state.settings.monthlyReports[ym][emp.name]={
+     ...(state.settings.monthlyReports[ym][emp.name]||{}),
+     displayDate:chosen,
+     cutoffDate:targetYm===ym ? chosen : '',
+     updatedAt:new Date().toISOString()
+   };
+
+   if(chosen){
+     state.settings.monthlyReports[targetYm]=state.settings.monthlyReports[targetYm]||{};
+     state.settings.monthlyReports[targetYm][emp.name]={
+       ...(state.settings.monthlyReports[targetYm][emp.name]||{}),
+       cutoffDate:chosen,
+       updatedAt:new Date().toISOString()
+     };
+   }
+ }
+
+ persist();
+ renderReports();
+ renderMonth();
+
+ try{
+   await pushSettings();
+   setSyncStatus('Supabase synchronisé ✓');
+   alert('Dates de report enregistrées et synchronisées.');
+ }catch(err){
+   console.error(err);
+   setSyncStatus('Reports sauvegardés localement',false);
+   alert('Reports enregistrés sur cet appareil. La synchronisation reprendra dès que possible.');
+ }
+}
+
+function moneyColumnsHidden(){return localStorage.getItem('rml_heures_hide_money')==='1'}
+function applyMoneyVisibility(){
+ const hidden=moneyColumnsHidden();
+ document.querySelectorAll('.money-col').forEach(x=>x.classList.toggle('hidden-money',hidden));
+ const b=el('toggleMoneyColumns');if(b)b.textContent=hidden?'Afficher les montants':'Masquer les montants'
+}
+function toggleMoneyColumns(){localStorage.setItem('rml_heures_hide_money',moneyColumnsHidden()?'0':'1');applyMoneyVisibility()}
+function optimizeRecapColumns(){
+ const table=el('recapBody')?.closest('table');
+ if(!table)return;
+
+ const rows=Array.from(table.querySelectorAll('tbody tr'));
+ const headers=Array.from(table.querySelectorAll('thead th'));
+ if(!rows.length||!headers.length)return;
+
+ // Colonnes toujours visibles : salarié, taux horaire, jours saisis, paniers.
+ const alwaysVisible=new Set([0,1,2,3]);
+
+ // Colonnes numériques / compteurs qui peuvent être masquées si tout le mois est à zéro.
+ for(let col=0;col<headers.length;col++){
+   if(alwaysVisible.has(col)){
+     headers[col].style.display='';
+     rows.forEach(r=>{ if(r.children[col]) r.children[col].style.display=''; });
+     continue;
+   }
+
+   const hasUsefulValue=rows.some(r=>{
+     const cell=r.children[col];
+     if(!cell)return false;
+     const txt=(cell.textContent||'').trim().toLowerCase();
+
+     // Considère comme vide les variantes courantes de zéro.
+     const zeroLike=[
+       '', '0', '0,00 €', '0.00 €', '0h00', '0:00',
+       '0h00 0,00 €', '0h00 0.00 €'
+     ];
+     if(zeroLike.includes(txt))return false;
+
+     // Ignore aussi les textes constitués uniquement de zéros / séparateurs / symboles.
+     const simplified=txt
+       .replace(/€/g,'')
+       .replace(/h/g,'')
+       .replace(/[:.,\s]/g,'')
+       .replace(/[()]/g,'')
+       .replace(/\+/g,'');
+     if(simplified && /^0+$/.test(simplified))return false;
+
+     return true;
+   });
+
+   const display=hasUsefulValue?'':'none';
+   headers[col].style.display=display;
+   rows.forEach(r=>{ if(r.children[col]) r.children[col].style.display=display; });
+ }
+}
+
+function renderRecap(){
+ const ym=el('recapMonth').value,cfg=state.settings.overtime||{rate1:10,rate2:25,thresholdHours:4};
+ el('recapBody').innerHTML=state.employees.map(emp=>{
+  const r=state.entries.filter(e=>e.employee===emp.name&&e.date.startsWith(ym));
+  const ledger=recoveryLedger(emp.name);
+  const incoming=incomingReportRows(emp.name,ym);
+  const opening=incoming.reduce((a,e)=>a+(Number(e.real)||0),0);
+  const rec=reportRecord(ym,emp.name);
+  const cutoff=(rec?.cutoffDate&&validCutoffForMonth(rec.cutoffDate,ym))?rec.cutoffDate:'';
+  const currentPayable=(cutoff?r.filter(e=>e.date<cutoff):r).map(e=>({...e,real:ledger[e.id]?.netReal ?? (e.real||0),sup:ledger[e.id]?.netReal ?? (e.sup||0)}));
+  const currentReported=(cutoff?r.filter(e=>e.date>=cutoff):[]).map(e=>({...e,real:ledger[e.id]?.netReal ?? (e.real||0),sup:ledger[e.id]?.netReal ?? (e.sup||0)}));
+  const payable=[...incoming,...currentPayable];
+  const sum=k=>r.reduce((a,e)=>a+(e[k]||0),0),ded=r.reduce((a,e)=>a+(mins(e.deduction)||0),0),
+        count=t=>r.filter(e=>e.type===t).length,paniers=r.reduce((a,e)=>a+panierForEntry(e),0),rate=Number(emp.rate)||0;
+  const amounts=overtimeAmounts(payable,rate),sp=amounts.sp;
+  const paidCurrent=currentPayable.reduce((a,e)=>a+(Number(e.real)||0),0);
+  const reportNext=currentReported.reduce((a,e)=>a+(Number(e.real)||0),0);
+  const routeMinutes=sum('route'),routeAmount=(routeMinutes/60)*rate;
+  return `<tr>
+   <td><b>${esc(emp.name)}</b>${opening>0?`<div class="muted" style="font-size:11px">${time(opening)} de ${monthLabelFr(previousMonth(ym))} payé ce mois</div>`:''}</td>
+   <td>${money(rate).replace(' €',' €/h')}</td><td>${r.length}</td><td><b>${paniers}</b></td>
+   <td>${time(sum('sup'))}</td><td>${time(routeMinutes)}</td><td class="money-col"><b>${money(routeAmount)}</b></td>
+   <td>${time(ded)}</td><td><b>${time(opening+paidCurrent)}</b>${reportNext>0?`<div class="muted" style="font-size:11px">${time(reportNext)} reporté</div>`:''}${recoveryBalanceAtEnd(emp.name,ym)>0?`<div class="recovery-debit" style="font-size:11px">${time(recoveryBalanceAtEnd(emp.name,ym))} à récupérer</div>`:''}</td>
+   <td>${time(sp.m1)}</td><td class="money-col"><b>${money(amounts.amount10)}</b></td>
+   <td>${time(sp.m2)}</td><td class="money-col"><b>${money(amounts.amount25)}</b></td>
+   <td class="money-col"><b>${money(amounts.total)}</b></td>
+   <td>${count('ABS')}</td><td>${count('MAL')}</td><td>${count('AT')}</td><td>${count('CGE')}</td><td>${count('FORM')}</td>
+  </tr>`
+ }).join('');
+ renderReports();optimizeRecapColumns();applyMoneyVisibility()
+}
+
+function todayIso(){
+ return new Date().toISOString().slice(0,10)
+}
+function leavePeriodKeyForDate(date){
+ if(!date)return '';
+ const y=Number(date.slice(0,4)),m=Number(date.slice(5,7));
+ return String(m>=4?y:y-1)
+}
+function leavePeriodBounds(key){
+ const y=Number(key);
+ return {start:`${y}-04-01`,end:`${y+1}-03-31`}
+}
+function leavePeriodLabel(key){
+ const b=leavePeriodBounds(key);
+ return `01/04/${key} → 31/03/${Number(key)+1}`
+}
+function initLeavePeriods(){
+ const sel=el('leavePeriod');
+ if(!sel)return;
+
+ // Conserver la période actuellement choisie lors du rafraîchissement du tableau.
+ const previousValue=sel.value;
+
+ const current=Number(leavePeriodKeyForDate(todayIso()));
+ const existing=new Set(Object.keys(state.settings.paidLeaveRights||{}).map(Number).filter(Number.isFinite));
+ for(let y=current-3;y<=current+2;y++)existing.add(y);
+
+ const years=[...existing].sort((a,b)=>b-a);
+ sel.innerHTML=years.map(y=>`<option value="${y}">${leavePeriodLabel(y)}</option>`).join('');
+
+ if(previousValue && years.map(String).includes(String(previousValue))){
+   sel.value=String(previousValue);
+ }else{
+   sel.value=String(current);
+ }
+}
+function leaveRights(period,employee){
+ return Number(state.settings.paidLeaveRights?.[period]?.[employee])||0
+}
+function leaveFraction(period,employee){
+ return Number(state.settings.paidLeaveFractionnement?.[period]?.[employee])||0
+}
+function leaveEntriesForPeriod(period,employee=''){
+ const {start,end}=leavePeriodBounds(period);
+ return state.entries.filter(e=>
+   e.type==='CGE' &&
+   e.date>=start && e.date<=end &&
+   (!employee || e.employee===employee)
+ ).sort((a,b)=>a.date.localeCompare(b.date)||a.employee.localeCompare(b.employee))
+}
+function renderPaidLeave(){
+ initLeavePeriods();
+ const period=el('leavePeriod')?.value;
+ if(!period)return;
+ const today=todayIso();
+ let totalRights=0,totalFraction=0,totalTaken=0,totalPlanned=0,totalAvailable=0,totalBalance=0;
+ el('leaveBody').innerHTML=state.employees.map(emp=>{
+   const rights=leaveRights(period,emp.name);
+   const fraction=leaveFraction(period,emp.name);
+   const rows=leaveEntriesForPeriod(period,emp.name);
+   const taken=rows.filter(e=>e.date<=today).length;
+   const planned=rows.filter(e=>e.date>today).length;
+   const available=rights+fraction-taken;
+   const after=available-planned;
+   totalRights+=rights;totalFraction+=fraction;totalTaken+=taken;totalPlanned+=planned;totalAvailable+=available;totalBalance+=after;
+   const cls=after<0?'leave-negative':after<=3?'leave-warning':'leave-positive';
+   return `<tr>
+    <td><b>${esc(emp.name)}</b></td>
+    <td><input class="leave-right-input" type="number" min="0" step="0.5" data-leave-right="${esc(emp.name)}" value="${rights}"> j</td>
+    <td><input class="leave-right-input" type="number" min="0" step="0.5" data-leave-fraction="${esc(emp.name)}" value="${fraction}"> j</td>
+    <td><b>${taken} j</b></td>
+    <td>${planned} j</td>
+    <td><b>${available} j</b></td>
+    <td class="${cls}">${after} j</td>
+   </tr>`
+ }).join('');
+ el('leaveTotalRights').textContent=`${totalRights} j`;
+ if(el('leaveTotalFraction'))el('leaveTotalFraction').textContent=`${totalFraction} j`;
+ el('leaveTotalTaken').textContent=`${totalTaken} j`;
+ el('leaveTotalPlanned').textContent=`${totalPlanned} j`;
+ if(el('leaveTotalAvailable'))el('leaveTotalAvailable').textContent=`${totalAvailable} j`;
+ el('leaveTotalBalance').textContent=`${totalBalance} j`;
+ if(el('leaveTotalAvailable'))el('leaveTotalAvailable').className=totalAvailable<0?'leave-negative':totalAvailable<=3?'leave-warning':'leave-positive';
+ el('leaveTotalBalance').className=totalBalance<0?'leave-negative':totalBalance<=3?'leave-warning':'leave-positive';
+
+ const details=leaveEntriesForPeriod(period);
+ el('leaveDetailBody').innerHTML=details.length?details.map(e=>`
+   <tr>
+    <td>${new Date(e.date+'T12:00:00').toLocaleDateString('fr-FR')}</td>
+    <td><b>${esc(e.employee)}</b></td>
+    <td><span class="badge CGE">${e.date>today?'Planifié':'Pris'}</span></td>
+    <td>${esc(e.comment||'')}</td>
+   </tr>`).join(''):`<tr><td colspan="4" class="empty">Aucun congé CGE saisi sur cette période.</td></tr>`;
+}
+
+async function saveLeaveRights(){
+ const period=el('leavePeriod')?.value;
+ if(!period)return;
+ state.settings.paidLeaveRights=state.settings.paidLeaveRights||{};
+ state.settings.paidLeaveRights[period]=state.settings.paidLeaveRights[period]||{};
+ state.settings.paidLeaveFractionnement=state.settings.paidLeaveFractionnement||{};
+ state.settings.paidLeaveFractionnement[period]=state.settings.paidLeaveFractionnement[period]||{};
+ document.querySelectorAll('[data-leave-right]').forEach(inp=>{
+   state.settings.paidLeaveRights[period][inp.dataset.leaveRight]=Math.max(0,Number(inp.value)||0)
+ });
+ document.querySelectorAll('[data-leave-fraction]').forEach(inp=>{
+   state.settings.paidLeaveFractionnement[period][inp.dataset.leaveFraction]=Math.max(0,Number(inp.value)||0)
+ });
+ persist();
+ renderPaidLeave();
+ try{
+   await pushSettings();
+   setSyncStatus('Supabase synchronisé ✓');
+   alert('Droits et jours de fractionnement enregistrés et synchronisés.');
+ }catch(err){
+   console.error(err);
+   setSyncStatus('Congés sauvegardés localement',false);
+   alert('Droits enregistrés localement. La synchronisation reprendra dès que possible.');
+ }
+}
+
+function renderSettings(){el('contStart').value=state.settings.CONT.start;el('contEnd').value=state.settings.CONT.end;el('claStart').value=state.settings.CLA.start;el('claEnd').value=state.settings.CLA.end;el('pauseStart').value=state.settings.CLA.pauseStart;el('pauseEnd').value=state.settings.CLA.pauseEnd;el('samStart').value=state.settings.SAM.start;el('otRate1').value=state.settings.overtime.rate1;el('otRate2').value=state.settings.overtime.rate2;el('otThreshold').value=state.settings.overtime.thresholdHours;renderEmployeeSettings();renderTeamSettings()}
+function renderEmployeeSettings(){el('employeeSettings').innerHTML=state.employees.map((e,i)=>`<div class="employee-row"><div><label>Nom</label><input data-n="${i}" value="${esc(e.name)}"></div><div><label>Taux horaire</label><input data-r="${i}" type="number" step="0.01" value="${e.rate||0}"></div><button onclick="removeEmployee(${i})">×</button></div>`).join('')}
+function removeEmployee(i){state.employees.splice(i,1);renderEmployeeSettings()}
+function addEmployee(){state.employees.push({name:'NOUVEAU SALARIÉ',rate:0});renderEmployeeSettings()}
+async function saveEmployees(){document.querySelectorAll('[data-n]').forEach(x=>state.employees[+x.dataset.n].name=x.value.trim());document.querySelectorAll('[data-r]').forEach(x=>state.employees[+x.dataset.r].rate=Number(x.value)||0);state.employees=state.employees.filter(e=>e.name);persist();options();renderTeamPicker();renderTeamSettings();renderMonth();renderRecap();renderPaidLeave();try{await pushEmployees();setSyncStatus('Supabase synchronisé ✓');alert('Salariés enregistrés et synchronisés.')}catch(err){console.error(err);setSyncStatus('Salariés sauvegardés localement',false);alert('Salariés enregistrés localement.')}}
+async function saveSettings(){state.settings.CONT={start:el('contStart').value,end:el('contEnd').value};state.settings.CLA={start:el('claStart').value,end:el('claEnd').value,pauseStart:el('pauseStart').value,pauseEnd:el('pauseEnd').value};state.settings.SAM={start:el('samStart').value,end:state.settings.SAM.end||'14:00'};state.settings.overtime={rate1:Number(el('otRate1').value)||0,rate2:Number(el('otRate2').value)||0,thresholdHours:Number(el('otThreshold').value)||0};persist();updateCalc();renderRecap();try{await pushSettings();setSyncStatus('Supabase synchronisé ✓');alert('Réglages enregistrés et synchronisés.')}catch(err){console.error(err);setSyncStatus('Réglages sauvegardés localement',false);alert('Réglages enregistrés localement.')}}
+
+function teamMode(on){
+ el('singleModeBtn')?.classList.toggle('active',!on);
+ el('teamModeBtn')?.classList.toggle('active',on);
+ el('teamPanel')?.classList.toggle('active',on);
+ const empField=el('employee')?.closest('.field');
+ if(empField) empField.style.opacity=on?'.45':'1';
+ updateTeamSummary();
+}
+function selectedTeamMembers(){return Array.from(document.querySelectorAll('.teamMemberCheck:checked')).map(x=>x.value)}
+function updateTeamSummary(){const n=selectedTeamMembers().length;if(el('teamSummary'))el('teamSummary').textContent=n+' salarié'+(n>1?'s':'')+' sélectionné'+(n>1?'s':'')}
+function renderTeamPicker(){
+ if(!el('teamMembers'))return;
+ el('teamMembers').innerHTML=state.employees.map(e=>`<label class="team-check"><input class="teamMemberCheck" type="checkbox" value="${esc(e.name)}"><span>${esc(e.name)}</span></label>`).join('');
+ document.querySelectorAll('.teamMemberCheck').forEach(x=>x.onchange=updateTeamSummary);
+ if(el('teamPreset'))el('teamPreset').innerHTML='<option value="">— Sélection libre —</option>'+(Array.isArray(state.settings.teams)?state.settings.teams:[]).map((t,i)=>`<option value="${i}">${esc(t.name||('Équipe '+(i+1)))}</option>`).join('');
+ updateTeamSummary();
+}
+function applyTeamPreset(){
+ const i=el('teamPreset').value;if(i==='')return;
+ const t=state.settings.teams[Number(i)];const members=new Set(t?.members||[]);
+ document.querySelectorAll('.teamMemberCheck').forEach(x=>x.checked=members.has(x.value));updateTeamSummary();
+}
+function renderTeamSettings(){
+ if(!el('teamSettingsList'))return;
+ el('teamSettingsList').innerHTML=(Array.isArray(state.settings.teams)?state.settings.teams:[]).map((t,i)=>`<div class="team-setting-row" data-team="${i}">
+  <div class="team-setting-head"><input class="teamName" value="${esc(t.name||'')}" placeholder="Nom de l’équipe"><button type="button" onclick="removeTeam(${i})">Supprimer</button></div>
+  <div class="team-setting-members">${state.employees.map(e=>`<label><input type="checkbox" class="teamCfgMember" value="${esc(e.name)}" ${(t.members||[]).includes(e.name)?'checked':''}> ${esc(e.name)}</label>`).join('')}</div>
+ </div>`).join('');
+}
+function addTeam(){state.settings.teams.push({name:'Nouvelle équipe',members:[]});renderTeamSettings()}
+function removeTeam(i){state.settings.teams.splice(i,1);renderTeamSettings();renderTeamPicker()}
+async function saveTeams(){
+ document.querySelectorAll('[data-team]').forEach(row=>{
+  const i=Number(row.dataset.team);
+  state.settings.teams[i]={name:row.querySelector('.teamName').value.trim()||('Équipe '+(i+1)),members:Array.from(row.querySelectorAll('.teamCfgMember:checked')).map(x=>x.value)}
+ });
+ persist();renderTeamPicker();
+ try{await pushSettings();setSyncStatus('Supabase synchronisé ✓');alert('Équipes enregistrées et synchronisées.')}
+ catch(err){console.error(err);setSyncStatus('Équipes sauvegardées localement',false);alert('Équipes enregistrées localement.')}
+}
+
+
+function buildFullBackup(){
+ return {
+  app:'RML_HEURES',
+  formatVersion:1,
+  exportedAt:new Date().toISOString(),
+  data:{
+   employees:state.employees||[],
+   entries:state.entries||[],
+   settings:state.settings||{}
   }
-  const type = field.type==="number" ? 'number' : 'text';
-  return `<input data-key="${field.key}" type="${type}" value="${String(value??'').replaceAll('"','&quot;')}">`;
+ }
 }
 
-function renderSection(section) {
-  const schema=SCHEMAS[section];
-  const host=document.getElementById(section);
-  host.innerHTML=`<div class="table-wrap"><table><thead><tr>${schema.headers.map(h=>`<th>${h}</th>`).join('')}<th class="delete-col"></th></tr></thead><tbody></tbody></table></div>`;
-}
-
-function addRow(section, data={}) {
-  const schema=SCHEMAS[section];
-  const tbody=document.querySelector(`#${section} tbody`);
-  const tr=document.createElement('tr');
-  tr.innerHTML=schema.fields.map(f=>`<td>${inputHtml(f,data[f.key])}</td>`).join('')+
-    `<td class="delete-col"><button class="danger small" onclick="this.closest('tr').remove();autoSave()">Supprimer</button></td>`;
-  tbody.appendChild(tr);
-  if(section==="descentes") {
-    const shape=tr.querySelector('[data-key="shape"]');
-    updateDescentDimension(shape, data.dimension||"");
-  }
-  tr.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',autoSave));
-}
-
-function updateDescentDimension(select, selected="") {
-  const tr=select.closest('tr');
-  const dim=tr.querySelector('[data-key="dimension"]');
-  const options=select.value==="RONDE" ? CATALOG.descentes_rondes :
-                select.value==="RECTANGLE" ? CATALOG.descentes_rectangles : [];
-  dim.innerHTML=optionHtml(options,selected);
-}
-
-function collectSection(section) {
-  return [...document.querySelectorAll(`#${section} tbody tr`)].map(tr => {
-    const obj={};
-    tr.querySelectorAll('[data-key]').forEach(el=>obj[el.dataset.key]=el.value);
-    return obj;
-  });
-}
-
-function getProject() {
-  const sections={};
-  Object.keys(SCHEMAS).forEach(k=>sections[k]=collectSection(k));
-  return {
-    version:"V13",
-    savedAt:new Date().toISOString(),
-    info:{
-      type_fiche:type_fiche.value,
-      client:client.value, chantier:chantier.value, adresse:adresse.value,
-      date:date.value, contact_chantier:contact_chantier.value,
-      telephone_contact:telephone_contact.value, chef:chef.value,
-      telephone:telephone.value, horaires:horaires.value, acces:acces.value,
-      remarques:remarques.value
-    },
-    sections
-  };
-}
-
-function loadProject(data) {
-  const info=data.info||{};
-  type_fiche.value=info.type_fiche||"preparation";
-  updateSheetTitle();
-  client.value=info.client||""; chantier.value=info.chantier||""; adresse.value=info.adresse||"";
-  date.value=info.date||""; contact_chantier.value=info.contact_chantier||"";
-  telephone_contact.value=info.telephone_contact||""; chef.value=info.chef||"";
-  telephone.value=info.telephone||""; horaires.value=info.horaires||"";
-  acces.value=info.acces||""; remarques.value=info.remarques||"";
-  Object.keys(SCHEMAS).forEach(section=>{
-    renderSection(section);
-    const rows=(data.sections&&data.sections[section])||[];
-    (rows.length?rows:[{}]).forEach(r=>addRow(section,r));
-  });
-  autoSave();
-  setStatus("Chantier chargé.");
-}
-
-function safeName(value) {
-  return (value||"Sans nom").trim().replace(/[\\/:*?"<>|]+/g,"-");
-}
-
-function saveJson() {
-  const data=getProject();
-  const fileName=`${safeName(data.info.client)} - ${safeName(data.info.chantier)}.json`;
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+function exportFullBackup(){
+ try{
+  const backup=buildFullBackup();
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download=fileName; a.click();
-  URL.revokeObjectURL(a.href);
-  setStatus("Fichier JSON enregistré.");
+  const d=new Date();
+  const stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');
+  a.href=url;
+  a.download='RML_HEURES_SAUVEGARDE_'+stamp+'.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }catch(err){
+  console.error(err);
+  alert('Impossible de créer la sauvegarde JSON.');
+ }
 }
 
-document.getElementById('jsonFile').addEventListener('change', async e=>{
-  const file=e.target.files[0];
-  if(!file) return;
-  try {
-    const data=JSON.parse(await file.text());
-    loadProject(data);
-  } catch(err) {
-    alert("Le fichier JSON est invalide.");
-  }
-  e.target.value="";
-});
-
-
-const PROJECT_LIBRARY_KEY = "rmlPreparationChantierProjectsV2";
-const PROJECT_TOMBSTONES_KEY = "rmlPreparationChantierDeletedV1";
-const DEVICE_ID_KEY = "rmlPreparationChantierDeviceIdV1";
-const PROJECT_FOLDERS_KEY = "rmlPreparationChantierFoldersV1";
-
-const SUPABASE_URL = "https://dbsibzcqhtecknpkkuxa.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WE_zFh9O23cF7zEDie4L3w_JUsSb9ao";
-const SUPABASE_TABLE = "rml_chantiers";
-let cloudSyncRunning = false;
-
-function newId() {
-  if (crypto && crypto.randomUUID) return crypto.randomUUID();
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-    return v.toString(16);
-  });
+function validateBackup(obj){
+ if(!obj||typeof obj!=='object')return false;
+ if(obj.app!=='RML_HEURES')return false;
+ if(!obj.data||typeof obj.data!=='object')return false;
+ if(!Array.isArray(obj.data.employees))return false;
+ if(!Array.isArray(obj.data.entries))return false;
+ if(!obj.data.settings||typeof obj.data.settings!=='object')return false;
+ return true;
 }
 
-function getDeviceId() {
-  let id = localStorage.getItem(DEVICE_ID_KEY);
-  if (!id) {
-    id = newId();
-    localStorage.setItem(DEVICE_ID_KEY, id);
-  }
-  return id;
-}
+async function restoreFullBackup(file){
+ try{
+  const text=await file.text();
+  const backup=JSON.parse(text);
 
-function getProjectLibrary() {
-  let raw = {};
-  try {
-    raw = JSON.parse(localStorage.getItem(PROJECT_LIBRARY_KEY) || "{}");
-  } catch(e) {}
-
-  // Migration automatique des anciennes sauvegardes REV13/REV14 indexées par nom.
-  if (!Object.keys(raw).length) {
-    try {
-      const legacy = JSON.parse(localStorage.getItem("rmlPreparationChantierProjectsV1") || "{}");
-      if (legacy && Object.keys(legacy).length) {
-        Object.entries(legacy).forEach(([name, entry]) => {
-          if (!entry || !entry.data) return;
-          const id = entry.id || newId();
-          raw[id] = {
-            id,
-            name: entry.name || name,
-            savedAt: entry.savedAt || new Date().toISOString(),
-            updatedAt: entry.updatedAt || entry.savedAt || new Date().toISOString(),
-            data: entry.data
-          };
-        });
-        localStorage.setItem(PROJECT_LIBRARY_KEY, JSON.stringify(raw));
-      }
-    } catch(e) {}
+  if(!validateBackup(backup)){
+   alert('Ce fichier ne correspond pas à une sauvegarde complète RML HEURES.');
+   return;
   }
 
-  // Normalisation des enregistrements.
-  let changed = false;
-  const normalized = {};
-  Object.entries(raw || {}).forEach(([key, entry]) => {
-    if (!entry || !entry.data) return;
-    const id = entry.id || (key.includes('-') ? key : newId());
-    const item = {
-      id,
-      name: entry.name || key || "Chantier sans nom",
-      savedAt: entry.savedAt || entry.updatedAt || new Date().toISOString(),
-      updatedAt: entry.updatedAt || entry.savedAt || new Date().toISOString(),
-      folderId: entry.folderId || "",
-      data: entry.data
-    };
-    normalized[id] = item;
-    if (id !== key || !entry.id || !entry.name || !entry.updatedAt) changed = true;
-  });
-  if (changed) localStorage.setItem(PROJECT_LIBRARY_KEY, JSON.stringify(normalized));
-  return normalized;
-}
-
-function saveProjectLibrary(library) {
-  localStorage.setItem(PROJECT_LIBRARY_KEY, JSON.stringify(library || {}));
-}
-
-function getTombstones() {
-  try { return JSON.parse(localStorage.getItem(PROJECT_TOMBSTONES_KEY) || "{}"); }
-  catch(e) { return {}; }
-}
-
-function saveTombstones(value) {
-  localStorage.setItem(PROJECT_TOMBSTONES_KEY, JSON.stringify(value || {}));
-}
-
-function defaultProjectSaveName() {
-  const clientName = (client.value || "").trim();
-  const chantierName = (chantier.value || "").trim();
-  return [clientName, chantierName].filter(Boolean).join(" - ") || "Chantier sans nom";
-}
-
-function getProjectFolders() {
-  try { return JSON.parse(localStorage.getItem(PROJECT_FOLDERS_KEY) || "{}"); }
-  catch(e) { return {}; }
-}
-function saveProjectFolders(folders) { localStorage.setItem(PROJECT_FOLDERS_KEY, JSON.stringify(folders || {})); }
-function refreshFolderControls(selectedFolderId = null) {
-  const folders=getProjectFolders();
-  const projectSel=document.getElementById("projectFolderSelect");
-  const filter=document.getElementById("folderFilter");
-  const currentProject = selectedFolderId !== null ? selectedFolderId : (projectSel?.value || "");
-  const currentFilter = filter?.value || "ALL";
-  const entries=Object.values(folders).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
-  if(projectSel){
-    projectSel.innerHTML='<option value="">Sans dossier</option>';
-    entries.forEach(f=>{const o=document.createElement("option");o.value=f.id;o.textContent=f.name;projectSel.appendChild(o);});
-    if(currentProject && folders[currentProject]) projectSel.value=currentProject;
-  }
-  if(filter){
-    filter.innerHTML='<option value="ALL">Tous les dossiers</option><option value="NONE">Sans dossier</option>';
-    entries.forEach(f=>{const o=document.createElement("option");o.value=f.id;o.textContent=f.name;filter.appendChild(o);});
-    if(currentFilter==="ALL"||currentFilter==="NONE"||folders[currentFilter]) filter.value=currentFilter;
-  }
-}
-function createProjectFolder(){
-  const input=document.getElementById("newFolderName");
-  const name=(input.value||"").trim();
-  if(!name){alert("Saisissez un nom de dossier.");return;}
-  const folders=getProjectFolders();
-  if(Object.values(folders).some(f=>f.name.toLowerCase()===name.toLowerCase())){alert("Ce dossier existe déjà.");return;}
-  const id=newId(); folders[id]={id,name,createdAt:new Date().toISOString()}; saveProjectFolders(folders);
-  input.value=""; refreshFolderControls(id); refreshSavedProjectsSelect(); refreshFolderManager(); setStatus(`Dossier « ${name} » créé.`);
-}
-function deleteSelectedFolder(){
-  const filter=document.getElementById("folderFilter");
-  let id=filter?.value || "";
-  if(!id || id==="ALL" || id==="NONE") {
-    const projectFolder=document.getElementById("projectFolderSelect")?.value || "";
-    if(projectFolder) id=projectFolder;
-  }
-  if(!id || id==="ALL" || id==="NONE") { alert("Sélectionnez le dossier à supprimer."); return; }
-  deleteFolderById(id);
-}
-
-async function deleteFolderById(id){
-  const folders=getProjectFolders();
-  const folder=folders[id];
-  if(!folder){ alert("Ce dossier n'existe plus."); refreshFolderManager(); return; }
-  const library=getProjectLibrary();
-  const affected=Object.values(library).filter(e=>e.folderId===id);
-  const suffix=affected.length ? `\n\n${affected.length} chantier(s) seront conservés et replacés dans « Sans dossier ».` : "\n\nCe dossier est vide.";
-  if(!confirm(`Supprimer le dossier « ${folder.name} » ?${suffix}`)) return;
-  const now=new Date().toISOString();
-  const rows=[];
-  affected.forEach(e=>{
-    e.folderId="";
-    e.updatedAt=now;
-    library[e.id]=e;
-    rows.push(cloudRowFromEntry(e));
-  });
-  saveProjectLibrary(library);
-  delete folders[id];
-  saveProjectFolders(folders);
-  const filter=document.getElementById("folderFilter");
-  if(filter && filter.value===id) filter.value="ALL";
-  refreshFolderControls();
-  refreshSavedProjectsSelect();
-  refreshFolderManager();
-  setStatus(`Dossier « ${folder.name} » supprimé. Chantiers conservés.`);
-  if(rows.length){
-    try { await pushCloudRows(rows); setCloudStatus("☁️ Supabase : suppression du dossier synchronisée", "ok"); }
-    catch(err){ console.error(err); setCloudStatus("☁️ Supabase : modification locale, synchronisation en attente", "warn"); }
-  }
-}
-
-function refreshFolderManager(){
-  const host=document.getElementById("folderManager");
-  if(!host) return;
-  const folders=getProjectFolders();
-  const library=getProjectLibrary();
-  const entries=Object.values(folders).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
-  if(!entries.length){ host.innerHTML=''; return; }
-  host.innerHTML=`<div class="folder-manager-title">Gestion des dossiers</div><div class="folder-manager-list">${entries.map(f=>{
-    const count=Object.values(library).filter(e=>e.folderId===f.id).length;
-    return `<div class="folder-chip"><span>📁 ${escapeHtml(f.name)} (${count})</span><button class="danger" onclick="deleteFolderById('${f.id}')">Supprimer</button></div>`;
-  }).join("")}</div>`;
-}
-
-let pendingMoveProjectId="";
-function openMoveDialog(id){
-  const library=getProjectLibrary();
-  const entry=library[id];
-  if(!entry){ alert("Cette sauvegarde est introuvable."); refreshSavedProjectsSelect(); return; }
-  pendingMoveProjectId=id;
-  const folders=getProjectFolders();
-  const sel=document.getElementById("moveFolderSelect");
-  sel.innerHTML='<option value="">Sans dossier</option>';
-  Object.values(folders).sort((a,b)=>a.name.localeCompare(b.name,"fr")).forEach(f=>{
-    const o=document.createElement("option"); o.value=f.id; o.textContent=f.name; sel.appendChild(o);
-  });
-  sel.value=entry.folderId || "";
-  document.getElementById("moveProjectLabel").textContent=entry.name;
-  document.getElementById("moveFolderModal").classList.remove("hidden");
-}
-function openMoveDialogForSelected(){
-  const id=document.getElementById("savedProjectsSelect")?.value || "";
-  if(!id){ alert("Sélectionnez d'abord un chantier enregistré."); return; }
-  openMoveDialog(id);
-}
-function closeMoveDialog(){
-  pendingMoveProjectId="";
-  document.getElementById("moveFolderModal")?.classList.add("hidden");
-}
-async function confirmMoveProject(){
-  const id=pendingMoveProjectId;
-  if(!id) return;
-  const library=getProjectLibrary();
-  const entry=library[id];
-  if(!entry){ closeMoveDialog(); return; }
-  entry.folderId=document.getElementById("moveFolderSelect")?.value || "";
-  entry.updatedAt=new Date().toISOString();
-  library[id]=entry;
-  saveProjectLibrary(library);
-  closeMoveDialog();
-  refreshFolderControls(entry.folderId || "");
-  refreshSavedProjectsSelect(id);
-  refreshFolderManager();
-  const folders=getProjectFolders();
-  const folderName=entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
-  setStatus(`Chantier « ${entry.name} » déplacé dans « ${folderName} ».`);
-  try { await pushCloudRows([cloudRowFromEntry(entry)]); setCloudStatus("☁️ Supabase : classement synchronisé", "ok"); }
-  catch(err){ console.error(err); setCloudStatus("☁️ Supabase : classement local, synchronisation en attente", "warn"); }
-}
-
-async function deleteProjectById(id) {
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry) { refreshSavedProjectsSelect(); return; }
-  if (!confirm(`Supprimer définitivement la fiche « ${entry.name} » sur tous les appareils ?`)) return;
-
-  const deletedAt = new Date().toISOString();
-  delete library[id];
-  saveProjectLibrary(library);
-  const tombstones = getTombstones();
-  tombstones[id] = deletedAt;
-  saveTombstones(tombstones);
-
-  const selected = document.getElementById("savedProjectsSelect");
-  if (selected && selected.value === id) selected.value = "";
-  const nameInput = document.getElementById("projectSaveName");
-  if (nameInput && selected && !selected.value) nameInput.value = "";
-  refreshSavedProjectsSelect();
-  setStatus(`Fiche « ${entry.name} » supprimée.`);
-
-  try {
-    await pushCloudRows([{id, name:entry.name, data:null, updated_at:deletedAt, deleted_at:deletedAt, device_id:getDeviceId()}]);
-    setCloudStatus("☁️ Supabase : suppression de la fiche synchronisée", "ok");
-  } catch(err) {
-    console.error(err);
-    setCloudStatus("☁️ Supabase : suppression locale, synchronisation en attente", "warn");
-  }
-}
-
-function renderSavedProjectsList(entries, folders) {
-  const host = document.getElementById("savedProjectsList");
-  if (!host) return;
-  if (!entries.length) {
-    host.innerHTML = '<div class="saved-projects-empty">Aucun chantier dans ce dossier.</div>';
-    return;
-  }
-  host.innerHTML = entries.map(entry => {
-    const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
-    const savedClient = entry.data?.info?.client || "";
-    const savedChantier = entry.data?.info?.chantier || "";
-    const contentLabel = [savedClient, savedChantier].filter(Boolean).join(" — ") || "Contenu non identifié";
-    const expected = (entry.name || "").toLowerCase();
-    const mismatch = savedClient && !expected.includes(savedClient.toLowerCase().slice(0, Math.min(12, savedClient.length)));
-    return `<div class="saved-project-row">
-      <div>
-        <div class="project-name">${escapeHtml(entry.name)}</div>
-        <div class="project-folder">📁 ${escapeHtml(folderName)}</div>
-        <div style="font-size:12px;margin-top:4px;color:${mismatch ? '#a62121' : '#52606d'};font-weight:${mismatch ? '700' : '600'}">Contenu : ${escapeHtml(contentLabel)}${mismatch ? ' ⚠️' : ''}</div>
-      </div>
-      <button class="secondary small" onclick="openProjectById('${entry.id}')">📂 Ouvrir</button>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="secondary small" onclick="openMoveDialog('${entry.id}')">📁 Classer</button>
-        <button class="danger small" onclick="deleteProjectById('${entry.id}')">🗑️ Supprimer</button>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-
-function clearCurrentProjectForEmptyFolder() {
-  // Remise à zéro visuelle uniquement : aucune sauvegarde n'est supprimée.
-  localStorage.removeItem("rmlPreparationChantierV11");
-
-  const ids = ["client","chantier","adresse","date","contact_chantier","telephone_contact","chef","telephone","horaires","acces","remarques"];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  const type = document.getElementById("type_fiche");
-  if (type) type.value = "preparation";
-  updateSheetTitle();
-
-  Object.keys(SCHEMAS).forEach(section => {
-    renderSection(section);
-    addRow(section);
-  });
-
-  const nameInput = document.getElementById("projectSaveName");
-  if (nameInput) nameInput.value = "";
-  const savedSelect = document.getElementById("savedProjectsSelect");
-  if (savedSelect) savedSelect.value = "";
-  const printSummary = document.getElementById("printSummary");
-  if (printSummary) printSummary.innerHTML = "";
-}
-
-function onFolderFilterChange() {
-  const filter = document.getElementById("folderFilter")?.value || "ALL";
-  const library = getProjectLibrary();
-  const entries = Object.values(library).filter(e =>
-    filter === "ALL" || (filter === "NONE" ? !e.folderId : e.folderId === filter)
+  const ok=confirm(
+   'Restaurer cette sauvegarde complète ?\n\n'+
+   'Date de sauvegarde : '+(backup.exportedAt?new Date(backup.exportedAt).toLocaleString('fr-FR'):'inconnue')+
+   '\n\nLes données locales actuelles seront remplacées.'
   );
+  if(!ok)return;
 
-  refreshSavedProjectsSelect();
+  state.employees=backup.data.employees;
+  state.entries=backup.data.entries;
+  state.settings=normalizeSettings(backup.data.settings);
 
-  // Un dossier précis et vide doit afficher une fiche vierge.
-  if (filter !== "ALL" && entries.length === 0) {
-    clearCurrentProjectForEmptyFolder();
-    const folders = getProjectFolders();
-    const folderName = filter === "NONE" ? "Sans dossier" : (folders[filter]?.name || "ce dossier");
-    setStatus(`« ${folderName} » est vide — fiche remise à zéro.`);
-  }
-}
+  persist();
+  options();
+  renderSettings();
+  renderTeamPicker();
+  renderMonth();
+  renderRecap();
+  updateCalc();
 
-function refreshSavedProjectsSelect(selectedId = "") {
-  refreshFolderControls();
-  refreshFolderManager();
-  const select = document.getElementById("savedProjectsSelect");
-  if (!select) return;
+  try{
+   // Synchronise la restauration vers Supabase pour remettre tous les appareils au même état.
+   await pushSettings();
 
-  const library = getProjectLibrary();
-  const folders = getProjectFolders();
-  const filter = document.getElementById("folderFilter")?.value || "ALL";
-  const allEntries = Object.values(library);
-  const entries = allEntries
-    .filter(e => filter === "ALL" || (filter === "NONE" ? !e.folderId : e.folderId === filter))
-    .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
+   // Remplacement complet des salariés côté Supabase
+   await db.from('rml_heures_employees').delete().neq('id',0);
+   if(state.employees.length){
+    const empRows=state.employees.map(e=>({
+     name:e.name,
+     hourly_rate:Number(e.rate)||0,
+     active:true,
+     updated_at:new Date().toISOString()
+    }));
+    const er=await db.from('rml_heures_employees').insert(empRows);
+    if(er.error)throw er.error;
+   }
 
-  select.innerHTML = '<option value="">Sélectionner un chantier enregistré</option>';
+   // Remplacement complet des journées côté Supabase
+   await db.from('rml_heures_entries').delete().neq('id',0);
+   for(const e of state.entries){
+    await pushEntry(e);
+   }
 
-  // Affichage par dossiers dans la liste de sélection des chantiers.
-  // Les dossiers sont des rubriques (optgroup) et les chantiers apparaissent dessous.
-  const addGroup = (label, groupEntries) => {
-    const group = document.createElement("optgroup");
-    group.label = `📁 ${label}`;
-    if (!groupEntries.length) {
-      const empty = document.createElement("option");
-      empty.disabled = true;
-      empty.textContent = "— dossier vide —";
-      group.appendChild(empty);
-    } else {
-      groupEntries
-        .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"))
-        .forEach(entry => {
-          const option = document.createElement("option");
-          option.value = entry.id;
-          option.textContent = `↳ ${entry.name}`;
-          group.appendChild(option);
-        });
-    }
-    select.appendChild(group);
-  };
-
-  if (filter === "ALL") {
-    const folderEntries = Object.values(folders).sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
-    folderEntries.forEach(folder => {
-      addGroup(folder.name, allEntries.filter(e => e.folderId === folder.id));
-    });
-    const withoutFolder = allEntries.filter(e => !e.folderId);
-    if (withoutFolder.length) addGroup("Sans dossier", withoutFolder);
-  } else if (filter === "NONE") {
-    addGroup("Sans dossier", entries);
-  } else {
-    addGroup(folders[filter]?.name || "Dossier", entries);
+   setSyncStatus('Sauvegarde restaurée et synchronisée ✓');
+   alert('Sauvegarde restaurée complètement et synchronisée avec Supabase.');
+  }catch(syncErr){
+   console.error(syncErr);
+   setSyncStatus('Sauvegarde restaurée localement — synchro incomplète',false);
+   alert('La sauvegarde a été restaurée sur cet appareil, mais la synchronisation Supabase n’a pas pu être terminée.');
   }
 
-  if (selectedId && entries.some(e => e.id === selectedId)) select.value = selectedId;
-  renderSavedProjectsList(entries, folders);
-}
-
-function openProjectById(id) {
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry || !entry.data) {
-    alert("Cette sauvegarde est introuvable.");
-    refreshSavedProjectsSelect();
-    return;
-  }
-
-  const savedClient = entry.data?.info?.client || "";
-  const savedChantier = entry.data?.info?.chantier || "";
-  loadProject(entry.data);
-
-  const nameInput = document.getElementById("projectSaveName");
-  const savedSelect = document.getElementById("savedProjectsSelect");
-  if (nameInput) nameInput.value = entry.name;
-  refreshFolderControls(entry.folderId || "");
-  refreshSavedProjectsSelect(id);
-  if (savedSelect) savedSelect.value = id;
-
-  setStatus(`Chantier « ${entry.name} » ouvert${savedClient ? " — " + savedClient : ""}.`);
-  const target = document.getElementById("screenSheetTitle") || document.querySelector(".card");
-  if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
-
-  // Alerte d'intégrité : utile pour repérer les sauvegardes écrasées par l'ancienne V12.
-  const expected = (entry.name || "").toLowerCase();
-  if (savedClient && !expected.includes(savedClient.toLowerCase().slice(0, Math.min(12, savedClient.length)))) {
-    setTimeout(() => alert(`La sauvegarde « ${entry.name} » contient actuellement les données :
-${savedClient}${savedChantier ? " — " + savedChantier : ""}.
-
-Elle a probablement été écrasée lors du classement avec l'ancienne V12.`), 150);
-  }
-}
-
-function selectProjectForMove(id) {
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry) return;
-  const select = document.getElementById("savedProjectsSelect");
-  if (select) select.value = id;
-  document.getElementById("projectSaveName").value = entry.name;
-  refreshFolderControls(entry.folderId || "");
-  setStatus(`Choisissez le dossier puis cliquez sur « Classer / déplacer ».`);
-}
-
-async function moveSelectedProjectToFolder() {
-  const select = document.getElementById("savedProjectsSelect");
-  const id = select?.value || "";
-  if (!id) { alert("Sélectionnez d'abord un chantier à classer."); return; }
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry) { refreshSavedProjectsSelect(); return; }
-  entry.folderId = document.getElementById("projectFolderSelect")?.value || "";
-  entry.updatedAt = new Date().toISOString();
-  library[id] = entry;
-  saveProjectLibrary(library);
-  try {
-    await pushCloudRows([cloudRowFromEntry(entry)]);
-    setCloudStatus("☁️ Supabase : classement synchronisé", "ok");
-  } catch(err) {
-    console.error(err);
-    setCloudStatus("☁️ Supabase : classement local, synchronisation en attente", "warn");
-  }
-  refreshSavedProjectsSelect(id);
-  const folders=getProjectFolders();
-  const folderName=entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
-  setStatus(`Chantier « ${entry.name} » classé dans « ${folderName} ».`);
-}
-
-function setCloudStatus(text, kind="") {
-  const el = document.getElementById("cloudStatus");
-  if (!el) return;
-  el.textContent = text;
-  el.className = "cloud-sync-status" + (kind ? " " + kind : "");
-}
-
-function ts(value) {
-  const n = Date.parse(value || 0);
-  return Number.isFinite(n) ? n : 0;
-}
-
-async function supabaseRequest(path, options={}) {
-  const headers = {
-    "apikey": SUPABASE_PUBLISHABLE_KEY,
-    "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-    "Content-Type": "application/json",
-    ...(options.headers || {})
-  };
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}${path}`, {...options, headers});
-  if (!response.ok) {
-    let detail = "";
-    try { detail = await response.text(); } catch(e) {}
-    throw new Error(`Supabase ${response.status}${detail ? " - " + detail : ""}`);
-  }
-  if (response.status === 204) return null;
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
-}
-
-function cloudRowFromEntry(entry) {
-  const folders = getProjectFolders();
-  const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "";
-  return {
-    id: entry.id,
-    name: entry.name,
-    data: {...(entry.data || {}), _libraryFolderId: entry.folderId || "", _libraryFolderName: folderName},
-    updated_at: entry.updatedAt,
-    deleted_at: null,
-    device_id: getDeviceId()
-  };
-}
-
-async function pushCloudRows(rows) {
-  if (!rows.length) return;
-  await supabaseRequest("?on_conflict=id", {
-    method: "POST",
-    headers: {"Prefer":"resolution=merge-duplicates,return=minimal"},
-    body: JSON.stringify(rows)
-  });
-}
-
-async function syncWithSupabase(options={}) {
-  if (cloudSyncRunning) return false;
-  if (!navigator.onLine) {
-    if (!options.silent) setCloudStatus("☁️ Supabase : hors connexion — sauvegarde locale active", "warn");
-    return false;
-  }
-
-  cloudSyncRunning = true;
-  if (!options.silent) setCloudStatus("☁️ Supabase : synchronisation…");
-  try {
-    let library = getProjectLibrary();
-    let tombstones = getTombstones();
-    const remote = await supabaseRequest("?select=id,name,data,updated_at,deleted_at&order=updated_at.asc", {method:"GET"}) || [];
-    const remoteIds = new Set();
-    const pushMap = new Map();
-
-    for (const row of remote) {
-      remoteIds.add(row.id);
-      const local = library[row.id];
-      const deletedAt = row.deleted_at || null;
-      const remoteUpdated = row.updated_at || deletedAt || new Date(0).toISOString();
-
-      if (deletedAt) {
-        const localUpdated = local ? ts(local.updatedAt) : 0;
-        if (!local || ts(deletedAt) >= localUpdated) {
-          if (local) delete library[row.id];
-          if (!tombstones[row.id] || ts(deletedAt) > ts(tombstones[row.id])) tombstones[row.id] = deletedAt;
-        } else {
-          pushMap.set(row.id, cloudRowFromEntry(local));
-        }
-        continue;
-      }
-
-      const tomb = tombstones[row.id];
-      if (tomb && ts(tomb) >= ts(remoteUpdated)) {
-        pushMap.set(row.id, {id:row.id, name:row.name || "Chantier supprimé", data:null, updated_at:tomb, deleted_at:tomb, device_id:getDeviceId()});
-        continue;
-      }
-
-      if (!local || ts(remoteUpdated) > ts(local.updatedAt)) {
-        const remoteFolderId = (row.data && row.data._libraryFolderId) || "";
-        const remoteFolderName = (row.data && row.data._libraryFolderName) || "";
-        if (remoteFolderId && remoteFolderName) {
-          const folders = getProjectFolders();
-          if (!folders[remoteFolderId]) { folders[remoteFolderId] = {id:remoteFolderId,name:remoteFolderName,createdAt:remoteUpdated}; saveProjectFolders(folders); }
-        }
-        library[row.id] = {
-          id: row.id,
-          name: row.name || "Chantier sans nom",
-          savedAt: remoteUpdated,
-          updatedAt: remoteUpdated,
-          folderId: (row.data && row.data._libraryFolderId) || "",
-          data: row.data || {}
-        };
-        if (tombstones[row.id]) delete tombstones[row.id];
-      } else if (ts(local.updatedAt) > ts(remoteUpdated)) {
-        pushMap.set(row.id, cloudRowFromEntry(local));
-      }
-    }
-
-    Object.values(library).forEach(entry => {
-      if (!remoteIds.has(entry.id)) pushMap.set(entry.id, cloudRowFromEntry(entry));
-    });
-
-    Object.entries(tombstones).forEach(([id, deletedAt]) => {
-      if (!remoteIds.has(id)) {
-        pushMap.set(id, {id, name:"Chantier supprimé", data:null, updated_at:deletedAt, deleted_at:deletedAt, device_id:getDeviceId()});
-      }
-    });
-
-    saveProjectLibrary(library);
-    saveTombstones(tombstones);
-    refreshSavedProjectsSelect(document.getElementById("savedProjectsSelect")?.value || "");
-    await pushCloudRows([...pushMap.values()]);
-
-    setCloudStatus(`☁️ Supabase : synchronisé à ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`, "ok");
-    return true;
-  } catch(err) {
-    console.error("Synchronisation Supabase :", err);
-    setCloudStatus("☁️ Supabase : indisponible — données conservées localement", "error");
-    if (!options.silent) setStatus("Synchronisation Supabase impossible. La sauvegarde locale reste active.");
-    return false;
-  } finally {
-    cloudSyncRunning = false;
-  }
-}
-
-async function saveProjectToLibrary() {
-  await syncWithSupabase({silent:true});
-  const input = document.getElementById("projectSaveName");
-  const select = document.getElementById("savedProjectsSelect");
-  let name = (input.value || "").trim() || defaultProjectSaveName();
-  let library = getProjectLibrary();
-  let id = select.value && library[select.value] ? select.value : "";
-
-  if (!id) {
-    const sameName = Object.values(library).find(e => e.name === name);
-    if (sameName) {
-      if (!confirm(`La sauvegarde « ${name} » existe déjà. Voulez-vous la remplacer ?`)) return;
-      id = sameName.id;
-    }
-  }
-  if (!id) id = newId();
-
-  const now = new Date().toISOString();
-  library[id] = {id, name, savedAt: library[id]?.savedAt || now, updatedAt: now, folderId: document.getElementById("projectFolderSelect")?.value || "", data:getProject()};
-  saveProjectLibrary(library);
-  const tombstones = getTombstones();
-  if (tombstones[id]) { delete tombstones[id]; saveTombstones(tombstones); }
-
-  input.value = name;
-  refreshSavedProjectsSelect(id);
-  setStatus(`Chantier « ${name} » sauvegardé.`);
-
-  try {
-    await pushCloudRows([cloudRowFromEntry(library[id])]);
-    setCloudStatus("☁️ Supabase : chantier sauvegardé dans le cloud", "ok");
-  } catch(err) {
-    console.error(err);
-    setCloudStatus("☁️ Supabase : en attente de connexion — sauvegarde locale faite", "warn");
-  }
-}
-
-function loadProjectFromLibrary() {
-  const id = document.getElementById("savedProjectsSelect")?.value || "";
-  if (!id) { alert("Sélectionnez d'abord un chantier enregistré."); return; }
-  openProjectById(id);
-}
-
-async function deleteProjectFromLibrary() {
-  const select = document.getElementById("savedProjectsSelect");
-  const id = select.value;
-  if (!id) { alert("Sélectionnez d'abord un chantier enregistré."); return; }
-  const library = getProjectLibrary();
-  const entry = library[id];
-  if (!entry) { refreshSavedProjectsSelect(); return; }
-  if (!confirm(`Supprimer définitivement la sauvegarde « ${entry.name} » sur tous les appareils ?`)) return;
-
-  const deletedAt = new Date().toISOString();
-  delete library[id];
-  saveProjectLibrary(library);
-  const tombstones = getTombstones();
-  tombstones[id] = deletedAt;
-  saveTombstones(tombstones);
-  document.getElementById("projectSaveName").value = "";
-  refreshSavedProjectsSelect();
-  setStatus(`Sauvegarde « ${entry.name} » supprimée.`);
-
-  try {
-    await pushCloudRows([{id, name:entry.name, data:null, updated_at:deletedAt, deleted_at:deletedAt, device_id:getDeviceId()}]);
-    setCloudStatus("☁️ Supabase : suppression synchronisée", "ok");
-  } catch(err) {
-    console.error(err);
-    setCloudStatus("☁️ Supabase : suppression en attente — elle sera propagée à la prochaine connexion", "warn");
-  }
-}
-
-function autoSave() {
-  localStorage.setItem("rmlPreparationChantierV11",JSON.stringify(getProject()));
-}
-
-function setStatus(msg) {
-  status.textContent=msg;
-  setTimeout(()=>{if(status.textContent===msg)status.textContent=""},3000);
-}
-
-function newProject() {
-  if(!confirm("Créer une nouvelle fiche et effacer toutes les données du chantier actuel ?")) return;
-
-  localStorage.removeItem("rmlPreparationChantierV11");
-
-  type_fiche.value = "preparation";
-  updateSheetTitle();
-  client.value = "";
-  chantier.value = "";
-  adresse.value = "";
-  date.value = "";
-  contact_chantier.value = "";
-  telephone_contact.value = "";
-  chef.value = "";
-  telephone.value = "";
-  horaires.value = "";
-  acces.value = "";
-  remarques.value = "";
-
-  Object.keys(SCHEMAS).forEach(section => {
-    renderSection(section);
-    addRow(section);
-  });
-
-  document.getElementById("jsonFile").value = "";
-  document.getElementById("printSummary").innerHTML = "";
-  document.getElementById("projectSaveName").value = "";
-  document.getElementById("savedProjectsSelect").value = "";
-  document.getElementById("projectFolderSelect").value = "";
-
-  setStatus("Nouveau chantier créé.");
+ }catch(err){
+  console.error(err);
+  alert('Impossible de lire ou restaurer ce fichier JSON.');
+ }
 }
 
 
-const PRINT_LABELS = {
-  gouttieres: "GOUTTIÈRES",
-  accessoires_gouttieres: "ACCESSOIRES GOUTTIÈRES",
-  descentes: "DESCENTES",
-  accessoires_descentes: "ACCESSOIRES DESCENTES",
-  couvertines: "COUVERTINES",
-  accessoires_couvertines: "ACCESSOIRES COUVERTINES",
-  bandeaux: "BANDEAUX",
-  sous_faces: "SOUS-FACES"
-};
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function ensureEmployeePlaceholder(){
+ const sel=el('employee');
+ if(!sel)return;
+ if(!sel.querySelector('option[value=""]')){
+   const opt=document.createElement('option');
+   opt.value='';
+   opt.textContent='Saisir un salarié dans la liste';
+   opt.disabled=true;
+   sel.insertBefore(opt,sel.firstChild);
+ }
+ if(!sel.value)sel.value='';
 }
 
-function isFilledQuantity(value) {
-  const v = String(value ?? "").trim().replace(",", ".");
-  if (!v) return false;
-  const n = Number(v);
-  return Number.isNaN(n) ? true : n !== 0;
-}
-
-function printableRows(section, rows) {
-  return rows.filter(row => isFilledQuantity(row.qty));
-}
-
-function buildPrintContent() {
-  const data = getProject();
-  const logo = document.querySelector(".rml-logo")?.src || "";
-  const info = data.info || {};
-
-  const infoItems = [
-    ["Client", info.client],
-    ["Chantier", info.chantier],
-    ["Adresse", info.adresse],
-    ["Date prévue", info.date],
-    ["Contact chantier", info.contact_chantier],
-    ["Téléphone contact chantier", info.telephone_contact],
-    ["Chef d'équipe", info.chef],
-    ["Téléphone client", info.telephone],
-    ["Horaires d'intervention", info.horaires],
-    ["Code portail / Accès", info.acces]
-  ].filter(([,value]) => String(value || "").trim() !== "");
-
-  let content = `
-    <div class="print-doc-header">
-      ${logo ? `<img src="${logo}" alt="Logo RML">` : ""}
-      <h1>RML GOUTTIÈRE ALU</h1>
-      <h2>${info.type_fiche === "intervention" ? "FICHE D'INTERVENTION CHANTIER" : "FICHE DE PRÉPARATION CHANTIER"}</h2>
-    </div>
-    <div class="print-info">
-      ${infoItems.map(([label,value]) => `<div><strong>${escapeHtml(label)} :</strong> ${escapeHtml(value)}</div>`).join("")}
-    </div>`;
-
-  const HANDWRITE_SECTIONS = new Set(["gouttieres","descentes","accessoires_descentes","couvertines","bandeaux","sous_faces"]);
-
-  Object.keys(SCHEMAS).forEach(section => {
-    const rows = printableRows(section, data.sections[section] || []);
-    if (!rows.length) return;
-
-    const schema = SCHEMAS[section];
-    content += `
-      <section class="print-section">
-        <h3>${PRINT_LABELS[section]}</h3>
-        <table>
-          <thead>
-            <tr>${schema.headers.map(h => `<th>${escapeHtml(h)}</th>`).join("")}</tr>
-          </thead>
-          <tbody>
-            ${rows.map(row => `
-              <tr>
-                ${schema.fields.map(field => `<td>${escapeHtml(row[field.key] || "")}</td>`).join("")}
-              </tr>`).join("")}
-          </tbody>
-        </table>
-        ${info.type_fiche === "intervention" && HANDWRITE_SECTIONS.has(section) ? `
-          <div class="handwrite-box">
-            <div class="handwrite-box-title">QUANTITÉS POSÉES / SUIVI CHANTIER</div>
-            <div class="handwrite-lines">
-              <div style="border-bottom:1px solid #999;height:20px;"></div>
-              <div style="border-bottom:1px solid #999;height:20px;"></div>
-            </div>
-          </div>` : ""}
-      </section>`;
-  });
-
-  if (String(info.remarques || "").trim()) {
-    content += `
-      <section class="print-section">
-        <h3>REMARQUES GÉNÉRALES</h3>
-        <div class="print-notes">${escapeHtml(info.remarques)}</div>
-      </section>`;
-  }
-
-  return content;
-}
-
-function printProject() {
-  document.getElementById("printSummary").innerHTML = buildPrintContent();
-  window.print();
-}
-
-function showPreview() {
-  autoSave();
-  document.getElementById("previewContent").innerHTML = buildPrintContent();
-  document.getElementById("previewModal").classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-}
-
-function hidePreview() {
-  document.getElementById("previewModal").classList.add("hidden");
-  document.body.style.overflow = "";
-}
-
-function printFromPreview() {
-  document.getElementById("printSummary").innerHTML = buildPrintContent();
-  window.print();
-}
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && !document.getElementById("previewModal").classList.contains("hidden")) {
-    hidePreview();
-  }
-});
-
-
-function updateSheetTitle() {
-  const isIntervention = document.getElementById("type_fiche")?.value === "intervention";
-  const title = isIntervention ? "FICHE D'INTERVENTION CHANTIER" : "FICHE DE PRÉPARATION CHANTIER";
-  const el = document.getElementById("screenSheetTitle");
-  if (el) el.textContent = title;
-}
-
-function init() {
-  updateSheetTitle();
-  refreshFolderControls();
-  refreshSavedProjectsSelect();
-  Object.keys(SCHEMAS).forEach(renderSection);
-
-  let restored = false;
-  const raw=localStorage.getItem("rmlPreparationChantierV11");
-  if(raw) {
-    try {
-      loadProject(JSON.parse(raw));
-      restored = true;
-    } catch(e) {}
-  }
-
-  if (!restored) Object.keys(SCHEMAS).forEach(k=>addRow(k));
-
-  document.querySelectorAll('#type_fiche,#client,#chantier,#adresse,#date,#contact_chantier,#telephone_contact,#chef,#telephone,#horaires,#acces,#remarques')
-    .forEach(el=>el.addEventListener('change',autoSave));
-
-  type_fiche.addEventListener("change", updateSheetTitle);
-
-  [client, chantier].forEach(el => {
-    el.addEventListener("change", () => {
-      const nameInput = document.getElementById("projectSaveName");
-      if (nameInput && !nameInput.value.trim()) nameInput.value = defaultProjectSaveName();
-    });
-  });
-
-  document.getElementById("savedProjectsSelect")?.addEventListener("change", e => {
-    const entry=getProjectLibrary()[e.target.value];
-    if(entry) refreshFolderControls(entry.folderId || "");
-  });
-
-  const nameInput = document.getElementById("projectSaveName");
-  if (nameInput && !nameInput.value.trim()) nameInput.value = defaultProjectSaveName();
-
-  syncWithSupabase({silent:true});
-  window.addEventListener("online", () => syncWithSupabase({silent:true}));
-  setInterval(() => syncWithSupabase({silent:true}), 60000);
-}
-init();
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===id));if(id==='mois')renderMonth();if(id==='recap')renderRecap();if(id==='conges')renderPaidLeave();if(id==='reglages')renderSettings()}
+function exportCsv(){const emp=el('monthEmployee').value,ym=el('monthPick').value;const rows=state.entries.filter(e=>e.employee===emp&&e.date.startsWith(ym)).sort((a,b)=>a.date.localeCompare(b.date));const data=[['Date','Salarié','Type','Embauche','Départ chantier ou atelier','Arrivée dépôt','H sup min','H route min','Déduction','H sup réelles min','Commentaire'],...rows.map(e=>[e.date,e.employee,e.type,e.startOverride||'',e.depart||'',e.arrivee||'',e.sup||0,e.route||0,e.deduction||'00:00',e.real||0,e.comment||''])];const csv=data.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`RML_HEURES_${emp}_${ym}.csv`;a.click();URL.revokeObjectURL(a.href)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.view));['employee','date','startOverride','depart','arrivee','deduction','absenceEnd'].forEach(id=>el(id)?.addEventListener('input',updateCalc));
+el('type')?.addEventListener('input',updateCalc);
+el('type')?.addEventListener('change',updateCalc);el('saveBtn').onclick=saveEntry;
+el('singleModeBtn').onclick=()=>teamMode(false);
+el('teamModeBtn').onclick=()=>teamMode(true);
+el('teamPreset').onchange=applyTeamPreset;el('clearBtn').onclick=clearForm;el('monthEmployee').onchange=renderMonth;el('monthPick').onchange=renderMonth;el('recapMonth').onchange=()=>{if(el('globalReportDate'))el('globalReportDate').value='';renderRecap()};el('saveReports').onclick=saveReports;if(el('toggleMoneyColumns'))el('toggleMoneyColumns').onclick=toggleMoneyColumns;el('applyGlobalReportDate').onclick=applyGlobalReportDate;el('clearGlobalReportDate').onclick=clearGlobalReportDate;el('saveSettings').onclick=saveSettings;el('saveEmployees').onclick=saveEmployees;el('addEmployee').onclick=addEmployee;
+el('exportFullBackup').onclick=exportFullBackup;
+el('importFullBackup').onclick=()=>el('importBackupFile').click();
+el('importBackupFile').onchange=e=>{
+ const file=e.target.files?.[0];
+ if(file)restoreFullBackup(file);
+ e.target.value='';
+};el('addTeam').onclick=addTeam;el('saveTeams').onclick=saveTeams;
+if(el('toggleTeamSettings')){
+ el('toggleTeamSettings').onclick=()=>{
+  const p=el('teamSettingsPanel');
+  const collapsed=p.classList.toggle('collapsed');
+  el('toggleTeamSettings').textContent=collapsed?'Ouvrir':'Fermer';
+  localStorage.setItem('rml_team_settings_collapsed',collapsed?'1':'0');
+ };
+ const collapsed=localStorage.getItem('rml_team_settings_collapsed')==='1';
+ if(collapsed){el('teamSettingsPanel').classList.add('collapsed');el('toggleTeamSettings').textContent='Ouvrir'}
+}if(el('leavePeriod'))el('leavePeriod').onchange=renderPaidLeave;
+if(el('saveLeaveRights'))el('saveLeaveRights').onclick=saveLeaveRights;
+if(el('printLeave'))el('printLeave').onclick=()=>window.print();
+el('exportCsv').onclick=exportCsv;el('printRecap').onclick=()=>window.print();el('syncNow').onclick=syncFromCloud;window.addEventListener('online',syncFromCloud);window.addEventListener('offline',()=>setSyncStatus('Hors ligne — sauvegarde locale',false));
+options();ensureEmployeePlaceholder();setToday();if(el('employee'))el('employee').value='';renderSettings();renderTeamPicker();teamMode(false);updateCalc();renderMonth();renderRecap();renderPaidLeave();syncFromCloud();
 </script>
+
+
+
+
+<script id="v171-new-entry-fix">
+document.addEventListener('DOMContentLoaded',()=>{
+  const newBtn=Array.from(document.querySelectorAll('button'))
+    .find(b=>b.textContent.trim()==='Nouvelle saisie');
+  if(newBtn)newBtn.onclick=clearForm;
+});
+</script>
+
 </body>
 </html>
