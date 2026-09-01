@@ -217,7 +217,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 }
 .project-save-grid{
   display:grid;
-  grid-template-columns:1.3fr auto 1.5fr auto auto auto;
+  grid-template-columns:1.3fr 1fr auto 1.5fr auto auto auto;
   gap:8px;
   align-items:center;
 }
@@ -248,6 +248,10 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 @media print{
   .project-save-panel{display:none!important}
 }
+.folder-toolbar{display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;margin-bottom:10px;align-items:center}
+.folder-toolbar input,.folder-toolbar select{min-height:42px}
+.folder-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#e5edf3;color:#0a2840;font-size:11px;font-weight:700;margin-left:6px}
+@media(max-width:850px){.folder-toolbar{grid-template-columns:1fr}.folder-toolbar button{width:100%}}
 
 </style>
 </head>
@@ -257,7 +261,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V11 REV15 SUPABASE</p>
+      <p>Préparation chantier — V12 DOSSIERS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -274,8 +278,15 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 
   <div class="project-save-panel">
     <div class="project-save-title">SAUVEGARDES CHANTIERS</div>
+    <div class="folder-toolbar">
+      <input id="newFolderName" type="text" placeholder="Nom du nouveau dossier">
+      <button class="secondary" onclick="createProjectFolder()">📁 + Nouveau dossier</button>
+      <select id="folderFilter" onchange="refreshSavedProjectsSelect()"><option value="ALL">Tous les dossiers</option></select>
+      <button class="danger" onclick="deleteSelectedFolder()">Supprimer le dossier</button>
+    </div>
     <div class="project-save-grid">
       <input id="projectSaveName" type="text" placeholder="Nom de la sauvegarde">
+      <select id="projectFolderSelect"><option value="">Sans dossier</option></select>
       <button class="primary" onclick="saveProjectToLibrary()">💾 Sauvegarder le chantier</button>
       <select id="savedProjectsSelect">
         <option value="">Sélectionner un chantier enregistré</option>
@@ -574,6 +585,7 @@ document.getElementById('jsonFile').addEventListener('change', async e=>{
 const PROJECT_LIBRARY_KEY = "rmlPreparationChantierProjectsV2";
 const PROJECT_TOMBSTONES_KEY = "rmlPreparationChantierDeletedV1";
 const DEVICE_ID_KEY = "rmlPreparationChantierDeviceIdV1";
+const PROJECT_FOLDERS_KEY = "rmlPreparationChantierFoldersV1";
 
 const SUPABASE_URL = "https://dbsibzcqhtecknpkkuxa.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WE_zFh9O23cF7zEDie4L3w_JUsSb9ao";
@@ -635,6 +647,7 @@ function getProjectLibrary() {
       name: entry.name || key || "Chantier sans nom",
       savedAt: entry.savedAt || entry.updatedAt || new Date().toISOString(),
       updatedAt: entry.updatedAt || entry.savedAt || new Date().toISOString(),
+      folderId: entry.folderId || "",
       data: entry.data
     };
     normalized[id] = item;
@@ -663,19 +676,65 @@ function defaultProjectSaveName() {
   return [clientName, chantierName].filter(Boolean).join(" - ") || "Chantier sans nom";
 }
 
+function getProjectFolders() {
+  try { return JSON.parse(localStorage.getItem(PROJECT_FOLDERS_KEY) || "{}"); }
+  catch(e) { return {}; }
+}
+function saveProjectFolders(folders) { localStorage.setItem(PROJECT_FOLDERS_KEY, JSON.stringify(folders || {})); }
+function refreshFolderControls(selectedFolderId = null) {
+  const folders=getProjectFolders();
+  const projectSel=document.getElementById("projectFolderSelect");
+  const filter=document.getElementById("folderFilter");
+  const currentProject = selectedFolderId !== null ? selectedFolderId : (projectSel?.value || "");
+  const currentFilter = filter?.value || "ALL";
+  const entries=Object.values(folders).sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+  if(projectSel){
+    projectSel.innerHTML='<option value="">Sans dossier</option>';
+    entries.forEach(f=>{const o=document.createElement("option");o.value=f.id;o.textContent=f.name;projectSel.appendChild(o);});
+    if(currentProject && folders[currentProject]) projectSel.value=currentProject;
+  }
+  if(filter){
+    filter.innerHTML='<option value="ALL">Tous les dossiers</option><option value="NONE">Sans dossier</option>';
+    entries.forEach(f=>{const o=document.createElement("option");o.value=f.id;o.textContent=f.name;filter.appendChild(o);});
+    if(currentFilter==="ALL"||currentFilter==="NONE"||folders[currentFilter]) filter.value=currentFilter;
+  }
+}
+function createProjectFolder(){
+  const input=document.getElementById("newFolderName");
+  const name=(input.value||"").trim();
+  if(!name){alert("Saisissez un nom de dossier.");return;}
+  const folders=getProjectFolders();
+  if(Object.values(folders).some(f=>f.name.toLowerCase()===name.toLowerCase())){alert("Ce dossier existe déjà.");return;}
+  const id=newId(); folders[id]={id,name,createdAt:new Date().toISOString()}; saveProjectFolders(folders);
+  input.value=""; refreshFolderControls(id); refreshSavedProjectsSelect(); setStatus(`Dossier « ${name} » créé.`);
+}
+function deleteSelectedFolder(){
+  const filter=document.getElementById("folderFilter"); const id=filter?.value;
+  if(!id||id==="ALL"||id==="NONE"){alert("Sélectionnez le dossier à supprimer dans le filtre.");return;}
+  const folders=getProjectFolders(); const folder=folders[id]; if(!folder)return;
+  if(!confirm(`Supprimer le dossier « ${folder.name} » ? Les chantiers seront conservés dans « Sans dossier ».`))return;
+  const library=getProjectLibrary(); Object.values(library).forEach(e=>{if(e.folderId===id){e.folderId="";e.updatedAt=new Date().toISOString();}}); saveProjectLibrary(library);
+  delete folders[id]; saveProjectFolders(folders); filter.value="ALL"; refreshFolderControls(); refreshSavedProjectsSelect(); setStatus(`Dossier « ${folder.name} » supprimé. Chantiers conservés.`);
+}
 function refreshSavedProjectsSelect(selectedId = "") {
+  refreshFolderControls();
   const select = document.getElementById("savedProjectsSelect");
   if (!select) return;
   const library = getProjectLibrary();
-  const entries = Object.values(library).sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
+  const folders = getProjectFolders();
+  const filter = document.getElementById("folderFilter")?.value || "ALL";
+  const entries = Object.values(library)
+    .filter(e => filter === "ALL" || (filter === "NONE" ? !e.folderId : e.folderId === filter))
+    .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
   select.innerHTML = '<option value="">Sélectionner un chantier enregistré</option>';
   entries.forEach(entry => {
     const option = document.createElement("option");
     option.value = entry.id;
-    option.textContent = entry.name;
+    const folderName = entry.folderId && folders[entry.folderId] ? folders[entry.folderId].name : "Sans dossier";
+    option.textContent = `${entry.name} — [${folderName}]`;
     select.appendChild(option);
   });
-  if (selectedId && library[selectedId]) select.value = selectedId;
+  if (selectedId && entries.some(e=>e.id===selectedId)) select.value = selectedId;
 }
 
 function setCloudStatus(text, kind="") {
@@ -712,7 +771,7 @@ function cloudRowFromEntry(entry) {
   return {
     id: entry.id,
     name: entry.name,
-    data: entry.data,
+    data: {...(entry.data || {}), _libraryFolderId: entry.folderId || ""},
     updated_at: entry.updatedAt,
     deleted_at: null,
     device_id: getDeviceId()
@@ -773,6 +832,7 @@ async function syncWithSupabase(options={}) {
           name: row.name || "Chantier sans nom",
           savedAt: remoteUpdated,
           updatedAt: remoteUpdated,
+          folderId: (row.data && row.data._libraryFolderId) || "",
           data: row.data || {}
         };
         if (tombstones[row.id]) delete tombstones[row.id];
@@ -826,7 +886,7 @@ async function saveProjectToLibrary() {
   if (!id) id = newId();
 
   const now = new Date().toISOString();
-  library[id] = {id, name, savedAt: library[id]?.savedAt || now, updatedAt: now, data:getProject()};
+  library[id] = {id, name, savedAt: library[id]?.savedAt || now, updatedAt: now, folderId: document.getElementById("projectFolderSelect")?.value || "", data:getProject()};
   saveProjectLibrary(library);
   const tombstones = getTombstones();
   if (tombstones[id]) { delete tombstones[id]; saveTombstones(tombstones); }
@@ -857,6 +917,7 @@ function loadProjectFromLibrary() {
   }
   loadProject(entry.data);
   document.getElementById("projectSaveName").value = entry.name;
+  refreshFolderControls(entry.folderId || "");
   select.value = id;
   setStatus(`Chantier « ${entry.name} » ouvert.`);
 }
@@ -926,6 +987,7 @@ function newProject() {
   document.getElementById("printSummary").innerHTML = "";
   document.getElementById("projectSaveName").value = "";
   document.getElementById("savedProjectsSelect").value = "";
+  document.getElementById("projectFolderSelect").value = "";
 
   setStatus("Nouveau chantier créé.");
 }
@@ -1071,6 +1133,7 @@ function updateSheetTitle() {
 
 function init() {
   updateSheetTitle();
+  refreshFolderControls();
   refreshSavedProjectsSelect();
   Object.keys(SCHEMAS).forEach(renderSection);
 
@@ -1094,7 +1157,13 @@ function init() {
 
   [client, chantier].forEach(el => {
     el.addEventListener("change", () => {
-      const nameInput = document.getElementById("projectSaveName");
+    
+  document.getElementById("savedProjectsSelect")?.addEventListener("change", e => {
+    const entry=getProjectLibrary()[e.target.value];
+    if(entry) refreshFolderControls(entry.folderId || "");
+  });
+
+  const nameInput = document.getElementById("projectSaveName");
       if (nameInput && !nameInput.value.trim()) {
         nameInput.value = defaultProjectSaveName();
       }
