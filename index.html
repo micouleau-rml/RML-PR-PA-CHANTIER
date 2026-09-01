@@ -215,16 +215,17 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   color:#113a5d;
   letter-spacing:.5px;
 }
-.project-save-grid{
-  display:grid;
-  grid-template-columns:1.3fr 1fr auto 1.5fr auto auto auto;
-  gap:8px;
-  align-items:center;
-}
-.project-save-grid input,
-.project-save-grid select{
-  min-height:42px;
-}
+.project-save-sections{display:grid;gap:12px}
+.save-section{border:1px solid #d9e0e6;border-radius:10px;padding:12px;background:#f8fafc}
+.save-section-title{font-size:13px;font-weight:800;color:#113a5d;text-transform:uppercase;letter-spacing:.45px;margin-bottom:10px}
+.save-section-subtitle{font-size:12px;color:#66727e;margin:-5px 0 10px}
+.client-folder-grid{display:grid;grid-template-columns:minmax(220px,1.25fr) auto minmax(220px,1fr) auto;gap:8px;align-items:center}
+.project-search-grid{display:grid;grid-template-columns:minmax(240px,1.2fr) minmax(280px,1.4fr) auto auto auto;gap:8px;align-items:center}
+.project-save-grid{display:grid;grid-template-columns:minmax(260px,1.4fr) minmax(220px,1fr) auto;gap:8px;align-items:center}
+.client-folder-grid input,.client-folder-grid select,.project-search-grid input,.project-search-grid select,.project-save-grid input,.project-save-grid select{min-height:42px}
+.project-search-input{padding-left:12px}
+.project-panel-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+.project-panel-footer .cloud-sync-status{margin:0;text-align:right;flex:1}
 
 .cloud-sync-status{
   margin-top:8px;
@@ -238,12 +239,10 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 .cloud-sync-status.error{color:#a62121}
 
 @media(max-width:850px){
-  .project-save-grid{
-    grid-template-columns:1fr;
-  }
-  .project-save-grid button{
-    width:100%;
-  }
+  .client-folder-grid,.project-search-grid,.project-save-grid{grid-template-columns:1fr}
+  .client-folder-grid button,.project-search-grid button,.project-save-grid button{width:100%}
+  .project-panel-footer{display:grid;grid-template-columns:1fr}
+  .project-panel-footer .cloud-sync-status{text-align:center}
 }
 @media print{
   .project-save-panel{display:none!important}
@@ -278,7 +277,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V19 DOSSIERS SIMPLIFIÉS + SUPABASE</p>
+      <p>Préparation chantier — V20 GESTION CHANTIERS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -294,27 +293,48 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   </div>
 
   <div class="project-save-panel">
-    <div class="project-save-title">SAUVEGARDES CHANTIERS</div>
-    <div class="folder-toolbar">
-      <input id="newFolderName" type="text" placeholder="Nom du nouveau dossier">
-      <button class="secondary" onclick="createProjectFolder()">📁 + Nouveau dossier</button>
-      <select id="folderFilter" onchange="onFolderFilterChange()"><option value="ALL">Tous les dossiers</option></select>
-      <button class="danger" onclick="deleteSelectedFolder()">Supprimer le dossier</button>
+    <div class="project-save-title">GESTION DES CHANTIERS</div>
+    <div class="project-save-sections">
+      <div class="save-section">
+        <div class="save-section-title">1. Clients / dossiers</div>
+        <div class="save-section-subtitle">Créez un client ou un dossier, puis utilisez-le pour classer les chantiers.</div>
+        <div class="client-folder-grid">
+          <input id="newFolderName" type="text" placeholder="Nom du client / dossier">
+          <button class="secondary" onclick="createProjectFolder()">📁 Créer</button>
+          <select id="folderFilter" onchange="onFolderFilterChange()"><option value="ALL">Tous les clients / dossiers</option></select>
+          <button class="danger" onclick="deleteSelectedFolder()">Supprimer le dossier</button>
+        </div>
+      </div>
+
+      <div class="save-section">
+        <div class="save-section-title">2. Rechercher / ouvrir un chantier</div>
+        <div class="save-section-subtitle">Recherche par nom de sauvegarde, client, chantier ou adresse.</div>
+        <div class="project-search-grid">
+          <input id="projectSearch" class="project-search-input" type="search" placeholder="🔎 Rechercher un chantier…" oninput="refreshSavedProjectsSelect()">
+          <select id="savedProjectsSelect">
+            <option value="">Sélectionner un chantier enregistré</option>
+          </select>
+          <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
+          <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer</button>
+          <button class="danger" onclick="deleteProjectFromLibrary()">🗑️ Supprimer</button>
+        </div>
+        <div id="savedProjectsList" class="saved-projects-list"></div>
+      </div>
+
+      <div class="save-section">
+        <div class="save-section-title">3. Sauvegarder le chantier en cours</div>
+        <div class="save-section-subtitle">Choisissez son nom et le client / dossier dans lequel il doit être rangé.</div>
+        <div class="project-save-grid">
+          <input id="projectSaveName" type="text" placeholder="Nom de la sauvegarde">
+          <select id="projectFolderSelect"><option value="">Sans dossier</option></select>
+          <button class="primary" onclick="saveProjectToLibrary()">💾 Sauvegarder le chantier</button>
+        </div>
+      </div>
     </div>
-    <div class="project-save-grid">
-      <input id="projectSaveName" type="text" placeholder="Nom de la sauvegarde">
-      <select id="projectFolderSelect"><option value="">Sans dossier</option></select>
-      <button class="primary" onclick="saveProjectToLibrary()">💾 Sauvegarder le chantier</button>
-      <select id="savedProjectsSelect">
-        <option value="">Sélectionner un chantier enregistré</option>
-      </select>
-      <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
-      <button class="danger" onclick="deleteProjectFromLibrary()">Supprimer</button>
-      <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer / déplacer</button>
+    <div class="project-panel-footer">
       <button class="secondary" onclick="syncWithSupabase()">☁️ Synchroniser</button>
+      <div id="cloudStatus" class="cloud-sync-status">☁️ Supabase : en attente</div>
     </div>
-    <div id="savedProjectsList" class="saved-projects-list"></div>
-    <div id="cloudStatus" class="cloud-sync-status">☁️ Supabase : en attente</div>
   </div>
 
   <div id="status" class="status"></div>
@@ -727,7 +747,7 @@ function refreshFolderControls(selectedFolderId = null) {
     if(currentProject && folders[currentProject]) projectSel.value=currentProject;
   }
   if(filter){
-    filter.innerHTML='<option value="ALL">Tous les dossiers</option><option value="NONE">Sans dossier</option>';
+    filter.innerHTML='<option value="ALL">Tous les clients / dossiers</option><option value="NONE">Sans dossier</option>';
     entries.forEach(f=>{const o=document.createElement("option");o.value=f.id;o.textContent=f.name;filter.appendChild(o);});
     if(currentFilter==="ALL"||currentFilter==="NONE"||folders[currentFilter]) filter.value=currentFilter;
   }
@@ -875,7 +895,7 @@ function renderSavedProjectsList(entries, folders) {
   const host = document.getElementById("savedProjectsList");
   if (!host) return;
   if (!entries.length) {
-    host.innerHTML = '<div class="saved-projects-empty">Aucun chantier dans ce dossier.</div>';
+    host.innerHTML = '<div class="saved-projects-empty">Aucun chantier trouvé.</div>';
     return;
   }
   host.innerHTML = entries.map(entry => {
@@ -949,8 +969,17 @@ function refreshSavedProjectsSelect(selectedId = "") {
   const folders = getProjectFolders();
   const filter = document.getElementById("folderFilter")?.value || "ALL";
   const allEntries = Object.values(library);
+  const search = (document.getElementById("projectSearch")?.value || "").trim().toLowerCase();
+  const matchesSearch = (e) => {
+    if (!search) return true;
+    const info = e.data?.info || {};
+    const haystack = [e.name, info.client, info.chantier, info.adresse, info.contact_chantier]
+      .filter(Boolean).join(" ").toLowerCase();
+    return haystack.includes(search);
+  };
   const entries = allEntries
     .filter(e => filter === "ALL" || (filter === "NONE" ? !e.folderId : e.folderId === filter))
+    .filter(matchesSearch)
     .sort((a,b) => (a.name || "").localeCompare(b.name || "", "fr"));
 
   select.innerHTML = '<option value="">Sélectionner un chantier enregistré</option>';
@@ -1019,14 +1048,6 @@ function openProjectById(id) {
   const target = document.getElementById("screenSheetTitle") || document.querySelector(".card");
   if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
 
-  // Alerte d'intégrité : utile pour repérer les sauvegardes écrasées par l'ancienne V12.
-  const expected = (entry.name || "").toLowerCase();
-  if (savedClient && !expected.includes(savedClient.toLowerCase().slice(0, Math.min(12, savedClient.length)))) {
-    setTimeout(() => alert(`La sauvegarde « ${entry.name} » contient actuellement les données :
-${savedClient}${savedChantier ? " — " + savedChantier : ""}.
-
-Elle a probablement été écrasée lors du classement avec l'ancienne V12.`), 150);
-  }
 }
 
 function selectProjectForMove(id) {
