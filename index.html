@@ -252,6 +252,13 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 .folder-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#e5edf3;color:#0a2840;font-size:11px;font-weight:700;margin-left:6px}
 @media(max-width:850px){.folder-toolbar{grid-template-columns:1fr}.folder-toolbar button{width:100%}}
 .saved-projects-list{margin-top:12px;display:grid;gap:8px}
+.save-section-details{border:1px solid #d9e0e6;border-radius:10px;background:#f8fafb;overflow:hidden}
+.save-section-details summary{cursor:pointer;list-style:none;padding:12px;font-weight:800;color:#113a5d;display:flex;align-items:center;justify-content:space-between}
+.save-section-details summary::-webkit-details-marker{display:none}
+.save-section-details summary::after{content:"▸";font-size:18px;transition:transform .15s ease}
+.save-section-details[open] summary::after{transform:rotate(90deg)}
+.save-section-details-body{padding:0 12px 12px}
+.save-section-details .save-section-subtitle{margin-top:0}
 .saved-project-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border:1px solid #d9e0e6;border-radius:9px;padding:9px;background:#f8fafb}
 .saved-project-row .project-name{font-weight:800;color:#113a5d}
 .saved-project-row .project-folder{font-size:12px;color:#66727e;margin-top:2px}
@@ -277,7 +284,7 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V21 GESTION CHANTIERS + SUPABASE</p>
+      <p>Préparation chantier — V22 DOSSIERS REPLIÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -306,20 +313,22 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
         </div>
       </div>
 
-      <div class="save-section">
-        <div class="save-section-title">2. Rechercher / ouvrir un chantier</div>
-        <div class="save-section-subtitle">Recherche par nom de sauvegarde, client, chantier ou adresse.</div>
-        <div class="project-search-grid">
-          <input id="projectSearch" class="project-search-input" type="search" placeholder="🔎 Rechercher un chantier…" oninput="refreshSavedProjectsSelect()">
-          <select id="savedProjectsSelect">
-            <option value="">Sélectionner un chantier enregistré</option>
-          </select>
-          <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
-          <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer</button>
-          <button class="danger" onclick="deleteProjectFromLibrary()">🗑️ Supprimer</button>
+      <details class="save-section-details" id="projectSearchSection">
+        <summary>2. Rechercher / ouvrir un chantier</summary>
+        <div class="save-section-details-body">
+          <div class="save-section-subtitle">Recherche par nom de sauvegarde, client, chantier ou adresse.</div>
+          <div class="project-search-grid">
+            <input id="projectSearch" class="project-search-input" type="search" placeholder="🔎 Rechercher un chantier…" oninput="refreshSavedProjectsSelect()">
+            <select id="savedProjectsSelect">
+              <option value="">Sélectionner un chantier enregistré</option>
+            </select>
+            <button class="secondary" onclick="loadProjectFromLibrary()">📂 Ouvrir</button>
+            <button class="secondary" onclick="openMoveDialogForSelected()">📁 Classer</button>
+            <button class="danger" onclick="deleteProjectFromLibrary()">🗑️ Supprimer</button>
+          </div>
+          <div id="savedProjectsList" class="saved-projects-list"></div>
         </div>
-        <div id="savedProjectsList" class="saved-projects-list"></div>
-      </div>
+      </details>
 
       <div class="save-section">
         <div class="save-section-title">3. Sauvegarder le chantier en cours</div>
