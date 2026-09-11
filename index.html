@@ -311,15 +311,15 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V24 DOSSIERS REPLIÉS + SUPABASE</p>
+      <p>Préparation chantier — V25 DOSSIERS REPLIÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
 
 <main>
   <div class="toolbar">
-    <button class="primary" onclick="saveJson()">💾 Sauvegarder JSON</button>
-    <button class="secondary" onclick="document.getElementById('jsonFile').click()">📂 Ouvrir JSON</button>
+    <button class="primary" onclick="saveFullBackup()">💾 Sauvegarder toute l'application</button>
+    <button class="secondary" onclick="document.getElementById('jsonFile').click()">📂 Restaurer toute l'application</button>
     <button class="secondary" onclick="showPreview()">👁️ Visualiser la fiche</button>
     <button class="secondary" onclick="printProject()">📄 Imprimer / PDF A4</button>
     <button class="danger" onclick="newProject()">Nouveau chantier</button>
@@ -648,25 +648,77 @@ function safeName(value) {
   return (value||"Sans nom").trim().replace(/[\\/:*?"<>|]+/g,"-");
 }
 
-function saveJson() {
-  const data=getProject();
-  const fileName=`${safeName(data.info.client)} - ${safeName(data.info.chantier)}.json`;
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download=fileName; a.click();
-  URL.revokeObjectURL(a.href);
-  setStatus("Fichier JSON enregistré.");
+function saveFullBackup() {
+  try {
+    autoSave();
+    const backup = {
+      app:"RML Préparation Chantier",
+      backupVersion:"V25_FULL_BACKUP_1",
+      exportedAt:new Date().toISOString(),
+      currentProject:getProject(),
+      localStorage:{}
+    };
+
+    for (let i=0;i<localStorage.length;i++) {
+      const key=localStorage.key(i);
+      if (!key) continue;
+      // Sauvegarde complète du contenu local de l'application RML Préparation Chantier.
+      if (key.startsWith("rmlPreparationChantier")) {
+        backup.localStorage[key]=localStorage.getItem(key);
+      }
+    }
+
+    const fileName=`Sauvegarde_complete_RML_Prepa_Chantier_${new Date().toISOString().slice(0,10)}.json`;
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setStatus("Sauvegarde complète de l’application enregistrée.");
+  } catch(err) {
+    console.error(err);
+    alert("Impossible de créer la sauvegarde complète de l’application.");
+  }
+}
+
+async function restoreFullBackup(file) {
+  try {
+    const backup=JSON.parse(await file.text());
+    if (!backup || backup.backupVersion !== "V25_FULL_BACKUP_1" || !backup.localStorage) {
+      alert("Ce fichier n’est pas une sauvegarde complète V25 valide.");
+      return;
+    }
+    if (!confirm("Restaurer toute l’application depuis cette sauvegarde ? Les données locales actuelles de Prépa Chantier seront remplacées.")) return;
+
+    // Supprime uniquement les clés de cette application pour ne pas toucher aux autres applis du navigateur.
+    const keys=[];
+    for (let i=0;i<localStorage.length;i++) {
+      const key=localStorage.key(i);
+      if (key && key.startsWith("rmlPreparationChantier")) keys.push(key);
+    }
+    keys.forEach(k=>localStorage.removeItem(k));
+
+    Object.entries(backup.localStorage).forEach(([key,value])=>{
+      if (key.startsWith("rmlPreparationChantier")) localStorage.setItem(key, value);
+    });
+
+    if (backup.currentProject) {
+      localStorage.setItem("rmlPreparationChantierV11", JSON.stringify(backup.currentProject));
+    }
+
+    alert("Sauvegarde complète restaurée. L’application va se recharger.");
+    location.reload();
+  } catch(err) {
+    console.error(err);
+    alert("Le fichier de sauvegarde complète est invalide ou illisible.");
+  }
 }
 
 document.getElementById('jsonFile').addEventListener('change', async e=>{
   const file=e.target.files[0];
   if(!file) return;
-  try {
-    const data=JSON.parse(await file.text());
-    loadProject(data);
-  } catch(err) {
-    alert("Le fichier JSON est invalide.");
-  }
+  await restoreFullBackup(file);
   e.target.value="";
 });
 
