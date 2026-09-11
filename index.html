@@ -87,6 +87,32 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
   .print-section th{background:#f3f3f3}
   .print-notes{white-space:pre-wrap;border:1px solid #888;padding:7px;font-size:10px}
 }
+
+.save-confirm-toast{
+  position:fixed;
+  left:50%;
+  top:calc(18px + env(safe-area-inset-top));
+  transform:translateX(-50%) translateY(-140%);
+  z-index:300;
+  width:min(620px,calc(100% - 28px));
+  background:#1f7a3f;
+  color:#fff;
+  border-radius:12px;
+  padding:14px 18px;
+  box-shadow:0 6px 24px rgba(0,0,0,.28);
+  text-align:center;
+  font-weight:800;
+  font-size:15px;
+  opacity:0;
+  transition:transform .22s ease,opacity .22s ease;
+  pointer-events:none;
+}
+.save-confirm-toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+.save-confirm-toast small{display:block;font-size:12px;font-weight:600;margin-top:3px;opacity:.95}
+
 .print-summary{display:none}
 
 @media print{.preview-modal{display:none!important}}
@@ -279,12 +305,13 @@ button{border:0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:7
 </style>
 </head>
 <body>
+<div id="saveConfirmToast" class="save-confirm-toast" role="status" aria-live="polite"></div>
 <header>
   <div class="header-inner">
     <img class="rml-logo" src="./logo-rml.png" alt="Logo RML">
     <div class="header-title">
       <h1>RML GOUTTIÈRE ALU</h1>
-      <p>Préparation chantier — V23 DOSSIERS REPLIÉS + SUPABASE</p>
+      <p>Préparation chantier — V24 DOSSIERS REPLIÉS + SUPABASE</p>
     </div>
   </div></div>
 </header>
@@ -1233,6 +1260,18 @@ async function syncWithSupabase(options={}) {
   }
 }
 
+let saveConfirmTimer = null;
+function showSaveConfirmation(name, folderId) {
+  const toast = document.getElementById("saveConfirmToast");
+  if (!toast) return;
+  const folders = getProjectFolders();
+  const folderName = folderId && folders[folderId] ? folders[folderId].name : "Sans dossier";
+  toast.innerHTML = `✓ CHANTIER ENREGISTRÉ<small>${escapeHtml(name)} — 📁 ${escapeHtml(folderName)}</small>`;
+  toast.classList.add("show");
+  clearTimeout(saveConfirmTimer);
+  saveConfirmTimer = setTimeout(() => toast.classList.remove("show"), 6500);
+}
+
 async function saveProjectToLibrary() {
   await syncWithSupabase({silent:true});
   const input = document.getElementById("projectSaveName");
@@ -1251,7 +1290,8 @@ async function saveProjectToLibrary() {
   if (!id) id = newId();
 
   const now = new Date().toISOString();
-  library[id] = {id, name, savedAt: library[id]?.savedAt || now, updatedAt: now, folderId: document.getElementById("projectFolderSelect")?.value || "", data:getProject()};
+  const selectedFolderId = document.getElementById("projectFolderSelect")?.value || "";
+  library[id] = {id, name, savedAt: library[id]?.savedAt || now, updatedAt: now, folderId: selectedFolderId, data:getProject()};
   saveProjectLibrary(library);
   const tombstones = getTombstones();
   if (tombstones[id]) { delete tombstones[id]; saveTombstones(tombstones); }
@@ -1259,6 +1299,7 @@ async function saveProjectToLibrary() {
   input.value = name;
   refreshSavedProjectsSelect(id);
   setStatus(`Chantier « ${name} » sauvegardé.`);
+  showSaveConfirmation(name, selectedFolderId);
 
   try {
     await pushCloudRows([cloudRowFromEntry(library[id])]);
